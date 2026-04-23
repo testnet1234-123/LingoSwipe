@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LingoSwipe — Swipe Tutorial</title>
+  <style>
+    /* ─── Reset & fonts ─────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    @import url('https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800;900&display=swap');
+
+    body {
+      font-family: 'Inter Tight', system-ui, sans-serif;
+      background: #e8e6e0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 40px 16px;
+    }
+
+    /* ─── Design tokens ─────────────────────────────────────────── */
+    :root {
+      --bg:      #F5F4F0;
+      --surface: #FFFFFF;
+      --border:  #ECEAE3;
+      --accent:  #F5A623;
+      --ink1:    #1A1814;
+      --ink2:    #4A463D;
+      --ink3:    #8A8478;
+      --save:    #2BB673;
+      --skip:    #E5533D;
+      --card-bg: #FAF9F4;
+      --card-border: #E5DEC8;
+    }
+
+    /* ─── Phone shell ───────────────────────────────────────────── */
+    .phone {
+      width: 375px;
+      background: var(--bg);
+      border-radius: 48px;
+      box-shadow:
+        0 0 0 10px #1a1a1a,
+        0 0 0 12px #2a2a2a,
+        0 40px 80px rgba(0,0,0,0.35);
+      overflow: hidden;
+      position: relative;
+      padding-bottom: 34px; /* home indicator space */
+    }
+
+    /* Notch */
+    .phone::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 130px; height: 30px;
+      background: #1a1a1a;
+      border-radius: 0 0 20px 20px;
+      z-index: 10;
+    }
+
+    /* Home indicator */
+    .phone::after {
+      content: '';
+      position: absolute;
+      bottom: 10px; left: 50%;
+      transform: translateX(-50%);
+      width: 120px; height: 5px;
+      background: rgba(0,0,0,0.25);
+      border-radius: 3px;
+    }
+
+    /* ─── Screen content ────────────────────────────────────────── */
+    .screen {
+      padding: 56px 0 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 780px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* ─── Progress dots ─────────────────────────────────────────── */
+    .dots {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+    .dot {
+      height: 6px;
+      border-radius: 999px;
+      background: #E3DED0;
+      transition: width 0.3s, background 0.3s;
+    }
+    .dot.done   { width: 6px;  background: #D8D2C3; }
+    .dot.active { width: 22px; background: var(--accent); }
+    .dot.future { width: 6px;  background: #E3DED0; }
+
+    /* ─── Titles ────────────────────────────────────────────────── */
+    .title {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--ink1);
+      text-align: center;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      padding: 0 28px;
+    }
+    .subtitle {
+      margin-top: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--ink3);
+      text-align: center;
+      padding: 0 28px;
+    }
+
+    /* ─── Demo area ─────────────────────────────────────────────── */
+    .demo-area {
+      width: 100%;
+      height: 300px;
+      position: relative;
+      margin-top: 24px;
+      flex-shrink: 0;
+    }
+
+    /* Green/red edge glows */
+    .glow-right, .glow-left {
+      position: absolute;
+      top: 0; bottom: 0;
+      width: 80px;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s;
+      z-index: 1;
+    }
+    .glow-right {
+      right: 0;
+      background: linear-gradient(to left, rgba(43,182,115,0.28), transparent);
+    }
+    .glow-left {
+      left: 0;
+      background: linear-gradient(to right, rgba(229,83,61,0.28), transparent);
+    }
+    .glow-right.visible, .glow-left.visible { opacity: 1; }
+
+    /* Side labels */
+    .side-label {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      z-index: 2;
+    }
+    .side-label.left  { left: 16px; }
+    .side-label.right { right: 16px; }
+
+    .side-circle {
+      width: 46px; height: 46px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+    }
+    .side-circle.skip-c  { background: rgba(229,83,61,0.12); }
+    .side-circle.save-c  { background: rgba(43,182,115,0.12); }
+
+    .side-label-name {
+      font-size: 12px; font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+    .side-label-name.skip { color: var(--skip); }
+    .side-label-name.save { color: var(--save); }
+
+    .side-label-sub {
+      font-size: 10px;
+      color: var(--ink3);
+      text-align: center;
+      line-height: 1.3;
+    }
+
+    /* ─── Flash card ────────────────────────────────────────────── */
+    .flashcard-wrap {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 5;
+      will-change: transform, opacity;
+    }
+
+    .flashcard {
+      width: 200px;
+      height: 260px;
+      border-radius: 28px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      box-shadow: 0 14px 40px rgba(0,0,0,0.14);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card-glow-save, .card-glow-skip {
+      position: absolute; inset: 0; border-radius: 28px;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    .card-glow-save { background: rgba(43,182,115,0.08); }
+    .card-glow-skip { background: rgba(229,83,61,0.08); }
+    .card-glow-save.visible, .card-glow-skip.visible { opacity: 1; }
+
+    .card-lang {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: var(--accent);
+      text-transform: uppercase;
+    }
+    .card-word {
+      font-size: 42px;
+      font-weight: 900;
+      color: var(--ink1);
+      letter-spacing: -0.03em;
+      line-height: 1;
+      text-align: center;
+    }
+    .card-hint {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--ink3);
+    }
+
+    /* Stamp */
+    .stamp {
+      position: absolute;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 0.05em;
+      padding: 5px 12px;
+      border-radius: 8px;
+      border-width: 2.5px;
+      border-style: solid;
+      opacity: 0;
+      transition: opacity 0.2s;
+      pointer-events: none;
+    }
+    .stamp.guardar {
+      color: var(--save); border-color: var(--save);
+      top: 18px; left: 16px;
+      transform: rotate(-14deg);
+    }
+    .stamp.saltar {
+      color: var(--skip); border-color: var(--skip);
+      top: 18px; right: 16px;
+      transform: rotate(14deg);
+    }
+    .stamp.visible { opacity: 1; }
+
+    /* ─── Info banner ───────────────────────────────────────────── */
+    .info-banner {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px 16px;
+      margin: 16px 24px 0;
+      width: calc(100% - 48px);
+    }
+    .info-icon { font-size: 20px; flex-shrink: 0; }
+    .info-text {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--ink2);
+      line-height: 1.5;
+    }
+    .info-text b { font-weight: 700; color: var(--ink1); }
+
+    /* ─── Spacer ────────────────────────────────────────────────── */
+    .flex-gap { flex: 1; }
+
+    /* ─── Bottom nav ────────────────────────────────────────────── */
+    .bottom-nav {
+      width: 100%;
+      padding: 14px 24px 0;
+    }
+
+    .cta-btn {
+      width: 100%;
+      height: 54px;
+      border-radius: 27px;
+      background: var(--accent);
+      border: none;
+      color: #fff;
+      font-family: inherit;
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      cursor: pointer;
+      box-shadow: 0 8px 24px -6px rgba(245,166,35,0.55);
+      transition: transform 0.12s, box-shadow 0.12s;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .cta-btn:active {
+      transform: scale(0.97);
+      box-shadow: 0 4px 12px -4px rgba(245,166,35,0.4);
+    }
+
+    /* ─── Card animation keyframes ──────────────────────────────── */
+    @keyframes flyRight {
+      0%   { transform: translate(-50%,-50%) rotate(0deg);   opacity: 1; }
+      100% { transform: translate(200%,-50%) rotate(12deg);  opacity: 0; }
+    }
+    @keyframes flyLeft {
+      0%   { transform: translate(-50%,-50%) rotate(0deg);   opacity: 1; }
+      100% { transform: translate(-300%,-50%) rotate(-12deg); opacity: 0; }
+    }
+    @keyframes fadeIn {
+      0%   { opacity: 0; transform: translate(-50%,-50%) scale(0.94); }
+      100% { opacity: 1; transform: translate(-50%,-50%) scale(1); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="phone">
+  <div class="screen">
+
+    <!-- Progress dots (5 total, last active) -->
+    <div class="dots">
+      <div class="dot done"></div>
+      <div class="dot done"></div>
+      <div class="dot done"></div>
+      <div class="dot done"></div>
+      <div class="dot active"></div>
+    </div>
+
+    <!-- Titles -->
+    <div class="title">Así funciona LingoSwipe</div>
+    <div class="subtitle">Desliza para decirle a la app cuánto sabes</div>
+
+    <!-- Interactive demo area -->
+    <div class="demo-area" id="demoArea">
+
+      <!-- Edge glows -->
+      <div class="glow-right" id="glowRight"></div>
+      <div class="glow-left"  id="glowLeft"></div>
+
+      <!-- Left: Fallo -->
+      <div class="side-label left">
+        <div class="side-circle skip-c">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path d="M19 12H5m0 0l6 6M5 12l6-6"
+                  stroke="#E5533D" stroke-width="2.4"
+                  stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <span class="side-label-name skip">Fallo</span>
+        <span class="side-label-sub">Vuelve<br>pronto</span>
+      </div>
+
+      <!-- Right: Dominé -->
+      <div class="side-label right">
+        <div class="side-circle save-c">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path d="M5 12h14m0 0l-6-6m6 6l-6 6"
+                  stroke="#2BB673" stroke-width="2.4"
+                  stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <span class="side-label-name save">Dominé</span>
+        <span class="side-label-sub">Al final<br>del mazo</span>
+      </div>
+
+      <!-- Flash card -->
+      <div class="flashcard-wrap" id="cardWrap">
+        <div class="flashcard">
+          <div class="card-glow-save" id="cardGlowSave"></div>
+          <div class="card-glow-skip" id="cardGlowSkip"></div>
+          <div class="stamp guardar" id="stampGuardar">GUARDAR</div>
+          <div class="stamp saltar"  id="stampSaltar">SALTAR</div>
+          <div class="card-lang" id="cardLang">ALEMÁN</div>
+          <div class="card-word" id="cardWord">Hallo</div>
+          <div class="card-hint" id="cardHint">Hola</div>
+        </div>
+      </div>
+
+    </div><!-- /demo-area -->
+
+    <!-- Info banner -->
+    <div class="info-banner">
+      <span class="info-icon">🧠</span>
+      <div class="info-text">
+        La app recuerda cuánto te costó cada palabra y la repite en el momento justo.
+        <b>Repetición espaciada.</b>
+      </div>
+    </div>
+
+    <div class="flex-gap"></div>
+
+    <!-- CTA -->
+    <div class="bottom-nav">
+      <button class="cta-btn">Continuar &nbsp;→</button>
+    </div>
+
+  </div><!-- /screen -->
+</div><!-- /phone -->
+
+<script>
+  /* ── Demo words ─────────────────────────────────────────────── */
+  const words = [
+    { lang: 'ALEMÁN',  word: 'Hallo',  hint: 'Hola',    goRight: true  },
+    { lang: 'ALEMÁN',  word: 'Danke',  hint: 'Gracias', goRight: false },
+    { lang: 'FRANCÉS', word: 'Bonjour',hint: 'Hola',    goRight: true  },
+    { lang: 'INGLÉS',  word: 'Thanks', hint: 'Gracias', goRight: false },
+  ];
+
+  let idx = 0;
+  let busy = false;
+
+  const cardWrap    = document.getElementById('cardWrap');
+  const cardLang    = document.getElementById('cardLang');
+  const cardWord    = document.getElementById('cardWord');
+  const cardHint    = document.getElementById('cardHint');
+  const stampG      = document.getElementById('stampGuardar');
+  const stampS      = document.getElementById('stampSaltar');
+  const glowR       = document.getElementById('glowRight');
+  const glowL       = document.getElementById('glowLeft');
+  const cardGlowS   = document.getElementById('cardGlowSave');
+  const cardGlowSk  = document.getElementById('cardGlowSkip');
+
+  function setCard(i) {
+    const w = words[i];
+    cardLang.textContent = w.lang;
+    cardWord.textContent = w.word;
+    cardHint.textContent = w.hint;
+    // adjust font size for long words
+    cardWord.style.fontSize = w.word.length > 6 ? '32px' : '42px';
+  }
+
+  function animate() {
+    if (busy) return;
+    busy = true;
+    const w = words[idx];
+
+    /* Step 1 – tilt + glow (300ms) */
+    setTimeout(() => {
+      if (w.goRight) {
+        cardWrap.style.transition = 'transform 0.3s ease';
+        cardWrap.style.transform = 'translate(-50%,-50%) rotate(9deg)';
+        glowR.classList.add('visible');
+        cardGlowS.classList.add('visible');
+      } else {
+        cardWrap.style.transition = 'transform 0.3s ease';
+        cardWrap.style.transform = 'translate(-50%,-50%) rotate(-9deg)';
+        glowL.classList.add('visible');
+        cardGlowSk.classList.add('visible');
+      }
+    }, 200);
+
+    /* Step 2 – stamp (550ms) */
+    setTimeout(() => {
+      if (w.goRight) stampG.classList.add('visible');
+      else           stampS.classList.add('visible');
+    }, 550);
+
+    /* Step 3 – fly off (900ms) */
+    setTimeout(() => {
+      cardWrap.style.transition = 'none';
+      cardWrap.style.animation  = (w.goRight ? 'flyRight' : 'flyLeft') + ' 0.38s ease-in forwards';
+    }, 900);
+
+    /* Step 4 – swap content and fade in (1300ms) */
+    setTimeout(() => {
+      idx = (idx + 1) % words.length;
+      // reset
+      cardWrap.style.animation  = 'none';
+      cardWrap.style.transition = 'none';
+      cardWrap.style.transform  = 'translate(-50%,-50%) scale(0.94)';
+      cardWrap.style.opacity    = '0';
+      stampG.classList.remove('visible');
+      stampS.classList.remove('visible');
+      glowR.classList.remove('visible');
+      glowL.classList.remove('visible');
+      cardGlowS.classList.remove('visible');
+      cardGlowSk.classList.remove('visible');
+      setCard(idx);
+
+      /* fade-in */
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        cardWrap.style.transition = 'transform 0.42s cubic-bezier(.34,1.56,.64,1), opacity 0.38s ease';
+        cardWrap.style.transform  = 'translate(-50%,-50%) scale(1)';
+        cardWrap.style.opacity    = '1';
+      }));
+
+      busy = false;
+    }, 1350);
+  }
+
+  /* Initial card */
+  setCard(0);
+
+  /* Start loop after 800ms, repeat every 4.2s */
+  setTimeout(() => {
+    animate();
+    setInterval(animate, 4200);
+  }, 800);
+</script>
+
+</body>
+</html>

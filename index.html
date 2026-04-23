@@ -1,0 +1,2113 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LingoSwipe — Aprende idiomas con tarjetas inteligentes</title>
+  <meta name="description" content="LingoSwipe: tarjetas inteligentes + gamificación + SRS. Aprende alemán, inglés, francés y búlgaro con rachas, mundos y modos de juego." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ============================================================
+       LingoSwipe — Landing
+       Dark gradient + glassmorphism aesthetic, aligned with the app
+       ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    :root {
+      /* Backgrounds */
+      --bg-1: #141620;
+      --bg-2: #1A1A2E;
+      --bg-3: #16213E;
+      --bg-dark: #0D0F1A;
+
+      /* Accents */
+      --accent-blue: #3B82F6;
+      --accent-purple: #8B5CF6;
+      --accent-grad: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
+      --accent-grad-soft: linear-gradient(135deg, rgba(59,130,246,0.20) 0%, rgba(139,92,246,0.20) 100%);
+
+      /* Text */
+      --text-1: #F9FAFB;
+      --text-2: #D1D5DB;
+      --text-3: #9CA3AF;
+      --text-4: #6B7280;
+
+      /* Cards */
+      --card-bg: rgba(255,255,255,0.06);
+      --card-bg-strong: rgba(255,255,255,0.09);
+      --card-border: rgba(255,255,255,0.10);
+      --card-border-strong: rgba(255,255,255,0.18);
+
+      /* Semantic */
+      --streak: #F97316;     /* orange */
+      --streak-2: #FB923C;
+      --success: #22C55E;    /* green */
+      --success-2: #06B6D4;  /* cyan */
+      --hearts: #EF4444;
+      --xp: #FACC15;
+
+      /* Radii */
+      --r-sm: 12px;
+      --r-md: 14px;
+      --r-lg: 20px;
+      --r-xl: 24px;
+      --r-2xl: 28px;
+      --r-pill: 999px;
+
+      /* Shadows — coloured accent, not pure black */
+      --shadow-accent: 0 20px 50px -15px rgba(139,92,246,0.55), 0 8px 20px -8px rgba(59,130,246,0.35);
+      --shadow-accent-sm: 0 10px 30px -10px rgba(139,92,246,0.45);
+      --shadow-card: 0 10px 30px -12px rgba(12, 14, 30, 0.6), 0 2px 8px rgba(12, 14, 30, 0.35);
+      --shadow-streak: 0 10px 30px -10px rgba(249,115,22,0.45);
+
+      /* Motion */
+      --ease: cubic-bezier(.2,.8,.2,1);
+      --ease-spring: cubic-bezier(.34,1.56,.64,1);
+
+      /* Type */
+      --font: 'Nunito', -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
+    }
+
+    body {
+      font-family: var(--font);
+      color: var(--text-1);
+      background: var(--bg-1);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+      font-weight: 500;
+      overflow-x: hidden;
+      line-height: 1.5;
+    }
+
+    /* ============================================================
+       Animated background — diagonal gradient + subtle particles
+       ============================================================ */
+    .app-bg {
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      background:
+        linear-gradient(135deg, #141620 0%, #1A1A2E 50%, #16213E 100%);
+    }
+    .app-bg::before {
+      content: "";
+      position: absolute;
+      inset: -20%;
+      background:
+        radial-gradient(ellipse 60% 50% at 20% 15%, rgba(59,130,246,0.25), transparent 60%),
+        radial-gradient(ellipse 60% 50% at 85% 20%, rgba(139,92,246,0.28), transparent 60%),
+        radial-gradient(ellipse 50% 40% at 80% 90%, rgba(6,182,212,0.18), transparent 60%),
+        radial-gradient(ellipse 50% 40% at 10% 80%, rgba(139,92,246,0.15), transparent 60%);
+      animation: bgDrift 12s ease-in-out infinite alternate;
+      filter: blur(20px);
+    }
+    @keyframes bgDrift {
+      0%   { transform: translate3d(0, 0, 0) scale(1); }
+      100% { transform: translate3d(-3%, 2%, 0) scale(1.05); }
+    }
+
+    /* Stars / particles layer */
+    .stars {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background-image:
+        radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,0.5), transparent 50%),
+        radial-gradient(1px 1px at 80% 30%, rgba(255,255,255,0.4), transparent 50%),
+        radial-gradient(1.5px 1.5px at 30% 70%, rgba(255,255,255,0.55), transparent 50%),
+        radial-gradient(1px 1px at 60% 80%, rgba(255,255,255,0.35), transparent 50%),
+        radial-gradient(1px 1px at 90% 60%, rgba(255,255,255,0.45), transparent 50%),
+        radial-gradient(1px 1px at 45% 15%, rgba(255,255,255,0.4), transparent 50%),
+        radial-gradient(1.5px 1.5px at 20% 90%, rgba(255,255,255,0.5), transparent 50%),
+        radial-gradient(1px 1px at 70% 45%, rgba(255,255,255,0.3), transparent 50%);
+      background-size: 120% 120%;
+      opacity: 0.6;
+      animation: starTwinkle 6s ease-in-out infinite alternate;
+    }
+    @keyframes starTwinkle {
+      0%   { opacity: 0.35; transform: translateY(0); }
+      100% { opacity: 0.7;  transform: translateY(-4px); }
+    }
+
+    /* ============================================================
+       Typography
+       ============================================================ */
+    h1, h2, h3, h4 { margin: 0; font-family: var(--font); letter-spacing: -0.01em; }
+    h1 { font-weight: 900; line-height: 1.05; letter-spacing: -0.025em; }
+    h2 { font-weight: 900; line-height: 1.1;  letter-spacing: -0.02em; }
+    h3 { font-weight: 800; line-height: 1.2; }
+    p  { margin: 0; }
+
+    .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--text-3);
+    }
+
+    .grad-text {
+      background: var(--accent-grad);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      color: transparent;
+    }
+
+    /* ============================================================
+       Layout
+       ============================================================ */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+    section { padding: 96px 0; position: relative; }
+    @media (max-width: 720px) { section { padding: 72px 0; } }
+
+    /* ============================================================
+       Buttons
+       ============================================================ */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      font-family: var(--font);
+      font-weight: 800;
+      font-size: 15px;
+      border: 0;
+      border-radius: var(--r-pill);
+      padding: 14px 26px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform 120ms var(--ease), box-shadow 220ms var(--ease), background 220ms var(--ease);
+      will-change: transform;
+    }
+    .btn:active { transform: scale(0.97); }
+    .btn-primary {
+      background: var(--accent-grad);
+      color: #fff;
+      box-shadow: var(--shadow-accent);
+    }
+    .btn-primary:hover {
+      box-shadow: 0 24px 60px -15px rgba(139,92,246,0.7), 0 10px 25px -8px rgba(59,130,246,0.45);
+    }
+    .btn-ghost {
+      background: var(--card-bg);
+      color: var(--text-1);
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+    .btn-ghost:hover {
+      background: var(--card-bg-strong);
+      border-color: var(--card-border-strong);
+    }
+    .btn-white {
+      background: #fff;
+      color: #111827;
+    }
+    .btn-white:hover { background: #F3F4F6; }
+
+    .btn-sm { padding: 10px 18px; font-size: 13px; }
+
+    /* ============================================================
+       Glass card
+       ============================================================ */
+    .glass {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--r-2xl);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: transform 220ms var(--ease), border-color 220ms var(--ease), background 220ms var(--ease);
+    }
+    .glass-hover:hover {
+      transform: scale(1.02);
+      border-color: rgba(139,92,246,0.45);
+      background: rgba(255,255,255,0.08);
+    }
+
+    /* ============================================================
+       Navbar
+       ============================================================ */
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(18px) saturate(140%);
+      -webkit-backdrop-filter: blur(18px) saturate(140%);
+      background: rgba(20, 22, 32, 0.55);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text-1); }
+    .brand-logo {
+      width: 36px; height: 36px; border-radius: 10px; object-fit: cover;
+      box-shadow: 0 4px 12px rgba(139,92,246,0.35);
+    }
+    .brand-name { font-weight: 900; font-size: 18px; letter-spacing: -0.01em; }
+    .nav-links { display: none; gap: 28px; }
+    .nav-links a { color: var(--text-2); text-decoration: none; font-size: 14px; font-weight: 600; transition: color 180ms; }
+    .nav-links a:hover { color: var(--text-1); }
+    @media (min-width: 980px) { .nav-links { display: flex; } }
+
+    /* ============================================================
+       Hero
+       ============================================================ */
+    .hero {
+      padding: 72px 0 96px;
+      position: relative;
+    }
+    .hero-grid {
+      display: grid;
+      gap: 48px;
+      align-items: center;
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 980px) {
+      .hero-grid { grid-template-columns: 1.05fr 1fr; gap: 64px; }
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 14px;
+      border-radius: var(--r-pill);
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      font-size: 12px; font-weight: 700;
+      color: var(--text-2);
+      backdrop-filter: blur(10px);
+    }
+    .hero-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--success); box-shadow: 0 0 8px var(--success); }
+    .hero h1 {
+      font-size: clamp(40px, 6vw, 68px);
+      margin-top: 20px;
+      text-wrap: balance;
+    }
+    .hero .lead {
+      margin-top: 22px;
+      font-size: clamp(16px, 1.6vw, 19px);
+      color: var(--text-2);
+      max-width: 560px;
+      line-height: 1.55;
+      text-wrap: pretty;
+    }
+    .hero-ctas { margin-top: 32px; display: flex; gap: 12px; flex-wrap: wrap; }
+    .hero-meta {
+      margin-top: 36px;
+      display: flex; flex-wrap: wrap; gap: 18px;
+      font-size: 13px; color: var(--text-3); font-weight: 600;
+    }
+    .hero-meta span { display: inline-flex; align-items: center; gap: 8px; }
+
+    /* ============================================================
+       iPhone mockup
+       ============================================================ */
+    .phone-wrap { position: relative; display: grid; place-items: center; }
+    .phone-glow {
+      position: absolute;
+      inset: -60px;
+      background:
+        radial-gradient(circle at 30% 30%, rgba(139,92,246,0.45), transparent 60%),
+        radial-gradient(circle at 70% 70%, rgba(59,130,246,0.35), transparent 65%);
+      filter: blur(40px);
+      z-index: 0;
+      animation: glowPulse 6s ease-in-out infinite alternate;
+    }
+    @keyframes glowPulse {
+      0%   { opacity: 0.75; transform: scale(1); }
+      100% { opacity: 1;    transform: scale(1.05); }
+    }
+    .phone {
+      position: relative;
+      z-index: 1;
+      width: 320px;
+      background: #0a0b12;
+      border-radius: 48px;
+      padding: 10px;
+      box-shadow:
+        0 0 0 1.5px rgba(255,255,255,0.08),
+        0 40px 80px -30px rgba(0,0,0,0.8),
+        var(--shadow-accent);
+    }
+    @media (min-width: 420px) { .phone { width: 340px; } }
+    .phone-screen {
+      position: relative;
+      border-radius: 40px;
+      overflow: hidden;
+      aspect-ratio: 9 / 19.5;
+      background: linear-gradient(160deg, #141620 0%, #1A1A2E 50%, #16213E 100%);
+    }
+    .phone-notch {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 110px; height: 28px;
+      border-radius: 999px;
+      background: #000;
+      z-index: 20;
+    }
+    .phone-stars {
+      position: absolute; inset: 0;
+      background-image:
+        radial-gradient(1px 1px at 15% 20%, rgba(255,255,255,0.6), transparent 50%),
+        radial-gradient(1px 1px at 75% 35%, rgba(255,255,255,0.5), transparent 50%),
+        radial-gradient(1.5px 1.5px at 40% 60%, rgba(255,255,255,0.7), transparent 50%),
+        radial-gradient(1px 1px at 85% 80%, rgba(255,255,255,0.4), transparent 50%),
+        radial-gradient(1px 1px at 20% 85%, rgba(255,255,255,0.45), transparent 50%);
+      opacity: 0.5;
+    }
+
+    /* Phone content */
+    .phone-content {
+      position: relative;
+      padding: 48px 16px 20px;
+      z-index: 1;
+      height: 100%;
+      display: flex; flex-direction: column; gap: 14px;
+    }
+    .status-bar {
+      position: absolute; top: 14px; left: 26px; right: 26px;
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 11px; font-weight: 800; color: rgba(255,255,255,0.85);
+      z-index: 10;
+    }
+    .status-bar-right { display: inline-flex; gap: 5px; align-items: center; }
+    .status-bar-right svg { width: 14px; height: 14px; }
+
+    /* Home header widget */
+    .home-header {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 14px;
+      border-radius: var(--r-lg);
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(12px);
+    }
+    .avatar {
+      width: 44px; height: 44px; border-radius: 50%;
+      background: linear-gradient(135deg, #3B82F6, #8B5CF6);
+      display: grid; place-items: center;
+      color: #fff; font-weight: 900; font-size: 16px;
+      box-shadow: 0 0 0 2px rgba(139,92,246,0.35), 0 6px 16px -4px rgba(59,130,246,0.5);
+    }
+    .home-header-info { flex: 1; min-width: 0; }
+    .home-header-info .name { font-weight: 800; font-size: 13px; color: var(--text-1); }
+    .lvl-row { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
+    .lvl-bar { flex: 1; height: 6px; border-radius: 999px; background: rgba(255,255,255,0.1); overflow: hidden; }
+    .lvl-fill { height: 100%; width: 62%; background: var(--accent-grad); border-radius: 999px; }
+    .lvl-label { font-size: 10px; color: var(--text-3); font-weight: 800; }
+    .streak-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 6px 10px;
+      border-radius: var(--r-pill);
+      background: linear-gradient(135deg, #F97316, #FB923C);
+      color: #fff; font-weight: 900; font-size: 12px;
+      box-shadow: var(--shadow-streak);
+    }
+
+    /* Main learn card */
+    .learn-card {
+      position: relative;
+      padding: 16px;
+      border-radius: 22px;
+      background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
+      color: #fff;
+      box-shadow: 0 20px 40px -20px rgba(139,92,246,0.7);
+      overflow: hidden;
+    }
+    .learn-card::after {
+      content: "";
+      position: absolute; inset: 0;
+      background: radial-gradient(circle at 85% 15%, rgba(255,255,255,0.18), transparent 55%);
+      pointer-events: none;
+    }
+    .learn-card .label { font-size: 10px; font-weight: 800; opacity: 0.85; letter-spacing: 0.08em; text-transform: uppercase; }
+    .learn-card .word { font-size: 22px; font-weight: 900; margin-top: 4px; letter-spacing: -0.01em; }
+    .learn-card .sub { font-size: 12px; opacity: 0.85; margin-top: 2px; }
+    .learn-card .cta {
+      display: inline-flex; align-items: center; gap: 6px;
+      margin-top: 12px;
+      padding: 8px 14px;
+      background: rgba(255,255,255,0.95);
+      color: #1F2937;
+      border-radius: 999px;
+      font-size: 12px; font-weight: 900;
+    }
+
+    /* Stats row */
+    .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .stat {
+      padding: 10px;
+      border-radius: 14px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      text-align: center;
+      backdrop-filter: blur(8px);
+    }
+    .stat .n { font-size: 15px; font-weight: 900; color: var(--text-1); }
+    .stat .l { font-size: 9px; font-weight: 700; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 2px; }
+    .stat .ic { font-size: 14px; margin-bottom: 2px; }
+
+    /* Mini feature tiles in phone */
+    .tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 4px; }
+    .tile {
+      aspect-ratio: 1/1;
+      border-radius: 14px;
+      display: grid; place-items: center;
+      font-size: 11px; font-weight: 800; color: #fff;
+      text-align: center;
+      padding: 6px;
+    }
+    .tile-swipe  { background: linear-gradient(135deg, rgba(59,130,246,0.25), rgba(139,92,246,0.25)); border: 1px solid rgba(139,92,246,0.35); }
+    .tile-audio  { background: linear-gradient(135deg, rgba(6,182,212,0.25), rgba(34,197,94,0.22)); border: 1px solid rgba(6,182,212,0.35); }
+    .tile-art    { background: linear-gradient(135deg, rgba(249,115,22,0.22), rgba(239,68,68,0.22)); border: 1px solid rgba(249,115,22,0.35); }
+    .tile-chest  { background: linear-gradient(135deg, rgba(250,204,21,0.22), rgba(249,115,22,0.22)); border: 1px solid rgba(250,204,21,0.32); }
+    .tile .glyph { font-size: 18px; margin-bottom: 3px; }
+
+    /* Phone tabbar */
+    .tabbar {
+      margin-top: auto;
+      display: flex; justify-content: space-around; align-items: center;
+      padding: 8px 4px;
+      border-radius: 18px;
+      background: rgba(13,15,26,0.7);
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(14px);
+    }
+    .tabbar-item { font-size: 10px; font-weight: 800; color: var(--text-3); text-align: center; display: grid; gap: 2px; }
+    .tabbar-item.active { color: var(--text-1); }
+    .tabbar-item .tg {
+      width: 26px; height: 26px; border-radius: 10px; display: grid; place-items: center; margin: 0 auto;
+      background: rgba(255,255,255,0.08);
+      font-size: 14px;
+    }
+    .tabbar-item.active .tg { background: var(--accent-grad); color: #fff; box-shadow: var(--shadow-accent-sm); }
+
+    /* ============================================================
+       Section headings
+       ============================================================ */
+    .section-head { max-width: 780px; margin-bottom: 56px; }
+    .section-head h2 {
+      font-size: clamp(32px, 4.5vw, 48px);
+      margin-top: 10px;
+    }
+    .section-head p {
+      margin-top: 16px;
+      font-size: 17px;
+      color: var(--text-2);
+      line-height: 1.55;
+      text-wrap: pretty;
+    }
+
+    /* ============================================================
+       Features cards
+       ============================================================ */
+    .feature-grid {
+      display: grid; gap: 20px;
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 720px) {
+      .feature-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    .feature-card {
+      padding: 32px;
+      border-radius: var(--r-xl);
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(12px);
+      transition: transform 220ms var(--ease), border-color 220ms var(--ease), background 220ms var(--ease);
+    }
+    .feature-card:hover {
+      transform: scale(1.02);
+      border-color: rgba(139,92,246,0.45);
+      background: rgba(255,255,255,0.08);
+    }
+    .feature-icon {
+      width: 56px; height: 56px;
+      border-radius: 18px;
+      display: grid; place-items: center;
+      font-size: 26px;
+      margin-bottom: 20px;
+    }
+    .icon-streak { background: rgba(249,115,22,0.15); box-shadow: 0 10px 30px -12px rgba(249,115,22,0.45), inset 0 0 0 1px rgba(249,115,22,0.25); }
+    .icon-map    { background: rgba(34,197,94,0.15); box-shadow: 0 10px 30px -12px rgba(34,197,94,0.45), inset 0 0 0 1px rgba(34,197,94,0.25); }
+    .icon-bolt   { background: rgba(59,130,246,0.18); box-shadow: 0 10px 30px -12px rgba(59,130,246,0.5), inset 0 0 0 1px rgba(59,130,246,0.28); }
+    .feature-card h3 { font-size: 20px; }
+    .feature-card p { margin-top: 10px; color: var(--text-3); font-size: 15px; line-height: 1.55; font-weight: 500; }
+
+    /* ============================================================
+       Gamification section
+       ============================================================ */
+    .gamification {
+      background: linear-gradient(180deg, rgba(13,15,26,0.4), rgba(13,15,26,0.7));
+    }
+    .stats-grid {
+      display: grid; gap: 16px;
+      grid-template-columns: repeat(2, 1fr);
+    }
+    @media (min-width: 720px) {
+      .stats-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+    .stat-card {
+      padding: 24px;
+      border-radius: var(--r-xl);
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(12px);
+    }
+    .stat-card .ic {
+      width: 44px; height: 44px; border-radius: 14px;
+      display: grid; place-items: center; font-size: 22px;
+      margin-bottom: 14px;
+    }
+    .ic-xp     { background: rgba(250,204,21,0.15); box-shadow: inset 0 0 0 1px rgba(250,204,21,0.28); }
+    .ic-level  { background: rgba(59,130,246,0.18); box-shadow: inset 0 0 0 1px rgba(59,130,246,0.32); }
+    .ic-streak { background: rgba(249,115,22,0.15); box-shadow: inset 0 0 0 1px rgba(249,115,22,0.28); }
+    .ic-hearts { background: rgba(239,68,68,0.15);  box-shadow: inset 0 0 0 1px rgba(239,68,68,0.28); }
+    .stat-card .eyebrow { font-size: 11px; }
+    .stat-card .value {
+      font-size: 32px; font-weight: 900; color: var(--text-1);
+      margin-top: 6px; letter-spacing: -0.02em;
+    }
+    .stat-card .desc { color: var(--text-3); font-size: 13px; margin-top: 4px; font-weight: 600; }
+
+    .gam-widget {
+      margin-top: 40px;
+      padding: 28px;
+      border-radius: var(--r-2xl);
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(12px);
+      display: grid;
+      gap: 24px;
+      grid-template-columns: 1fr;
+      align-items: center;
+    }
+    @media (min-width: 720px) {
+      .gam-widget { grid-template-columns: auto 1fr auto; }
+    }
+    .gam-avatar {
+      width: 72px; height: 72px; border-radius: 50%;
+      background: linear-gradient(135deg, #3B82F6, #8B5CF6);
+      display: grid; place-items: center;
+      color: #fff; font-weight: 900; font-size: 24px;
+      box-shadow: 0 0 0 3px rgba(139,92,246,0.25), var(--shadow-accent-sm);
+    }
+    .gam-info .name { font-size: 20px; font-weight: 900; color: var(--text-1); }
+    .gam-info .sub  { font-size: 13px; color: var(--text-3); font-weight: 700; margin-top: 2px; }
+    .gam-info .lvl-wrap { margin-top: 12px; display: flex; align-items: center; gap: 10px; }
+    .gam-info .lvl-bar { flex: 1; height: 8px; border-radius: 999px; background: rgba(255,255,255,0.1); overflow: hidden; max-width: 340px; }
+    .gam-info .lvl-fill { height: 100%; width: 72%; background: var(--accent-grad); border-radius: 999px; box-shadow: 0 0 12px rgba(59,130,246,0.6); }
+    .gam-info .lvl-label { font-size: 12px; font-weight: 800; color: var(--text-2); }
+    .gam-streak {
+      padding: 10px 16px;
+      border-radius: var(--r-pill);
+      background: linear-gradient(135deg, #F97316, #FB923C);
+      color: #fff; font-weight: 900; font-size: 14px;
+      box-shadow: var(--shadow-streak);
+      display: inline-flex; align-items: center; gap: 6px;
+      white-space: nowrap;
+    }
+
+    /* ============================================================
+       Modes section
+       ============================================================ */
+    .modes-grid {
+      display: grid; gap: 16px;
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 720px) {
+      .modes-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    .mode {
+      display: flex; align-items: center; gap: 18px;
+      padding: 22px;
+      border-radius: var(--r-lg);
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(12px);
+      transition: transform 220ms var(--ease), border-color 220ms var(--ease), background 220ms var(--ease);
+    }
+    .mode:hover { transform: scale(1.01); border-color: rgba(139,92,246,0.4); background: rgba(255,255,255,0.08); }
+    .mode-icon {
+      width: 52px; height: 52px; border-radius: 14px;
+      display: grid; place-items: center; font-size: 22px;
+      flex-shrink: 0;
+    }
+    .mi-flash { background: rgba(59,130,246,0.15); color: #60A5FA; box-shadow: inset 0 0 0 1px rgba(59,130,246,0.3); }
+    .mi-chall { background: rgba(249,115,22,0.15); color: #FB923C; box-shadow: inset 0 0 0 1px rgba(249,115,22,0.3); }
+    .mi-art   { background: rgba(139,92,246,0.15); color: #A78BFA; box-shadow: inset 0 0 0 1px rgba(139,92,246,0.3); }
+    .mi-audio { background: rgba(6,182,212,0.15);  color: #22D3EE; box-shadow: inset 0 0 0 1px rgba(6,182,212,0.3); }
+    .mi-surv  { background: rgba(239,68,68,0.15);  color: #F87171; box-shadow: inset 0 0 0 1px rgba(239,68,68,0.3); }
+    .mi-srs   { background: rgba(34,197,94,0.15);  color: #4ADE80; box-shadow: inset 0 0 0 1px rgba(34,197,94,0.3); }
+    .mode h3 { font-size: 17px; font-weight: 800; }
+    .mode p  { margin-top: 4px; color: var(--text-3); font-size: 13px; font-weight: 600; }
+
+    /* ============================================================
+       SRS / Progress section
+       ============================================================ */
+    .srs-grid {
+      display: grid; gap: 48px; align-items: center;
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 900px) {
+      .srs-grid { grid-template-columns: 1fr 1fr; }
+    }
+    .srs-ring-wrap {
+      position: relative;
+      display: grid; place-items: center;
+      padding: 40px;
+    }
+    .srs-ring-bg {
+      position: absolute; inset: 0;
+      background: radial-gradient(circle at center, rgba(34,197,94,0.25), transparent 70%);
+      filter: blur(40px);
+      z-index: 0;
+    }
+    .srs-ring {
+      position: relative;
+      width: 280px; height: 280px;
+      z-index: 1;
+    }
+    .srs-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+    .ring-bg { stroke: rgba(255,255,255,0.08); }
+    .ring-fill { stroke: url(#ringGrad); stroke-linecap: round; filter: drop-shadow(0 0 12px rgba(6,182,212,0.5)); }
+    .srs-ring-center {
+      position: absolute; inset: 0;
+      display: grid; place-items: center;
+      text-align: center;
+    }
+    .srs-ring-center .pct { font-size: 56px; font-weight: 900; letter-spacing: -0.03em; }
+    .srs-ring-center .lbl { font-size: 12px; font-weight: 800; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.1em; margin-top: -4px; }
+
+    .srs-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 24px; }
+    .srs-stat { padding: 12px; border-radius: 14px; background: var(--card-bg); border: 1px solid var(--card-border); text-align: center; }
+    .srs-stat .n { font-size: 18px; font-weight: 900; color: var(--text-1); }
+    .srs-stat .l { font-size: 10px; color: var(--text-3); font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; margin-top: 2px; }
+
+    .srs-bullets { display: grid; gap: 14px; margin-top: 22px; }
+    .srs-bullet { display: flex; align-items: flex-start; gap: 12px; }
+    .srs-bullet-dot {
+      width: 24px; height: 24px; border-radius: 8px; flex-shrink: 0;
+      background: linear-gradient(135deg, #22C55E, #06B6D4);
+      display: grid; place-items: center; font-size: 12px; color: #fff; font-weight: 900;
+    }
+    .srs-bullet .t { font-size: 15px; font-weight: 800; color: var(--text-1); }
+    .srs-bullet .d { font-size: 13px; font-weight: 600; color: var(--text-3); margin-top: 2px; line-height: 1.5; }
+
+    /* ============================================================
+       Premium CTA
+       ============================================================ */
+    .premium {
+      position: relative;
+      padding: 56px 40px;
+      border-radius: var(--r-2xl);
+      background: linear-gradient(135deg, #3B82F6 0%, #6366F1 50%, #8B5CF6 100%);
+      overflow: hidden;
+      box-shadow: var(--shadow-accent);
+    }
+    .premium::before {
+      content: "";
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(circle at 15% 20%, rgba(255,255,255,0.25), transparent 40%),
+        radial-gradient(circle at 85% 80%, rgba(6,182,212,0.3), transparent 50%);
+      pointer-events: none;
+    }
+    .premium-inner {
+      position: relative; z-index: 1;
+      display: grid; gap: 36px;
+      grid-template-columns: 1fr;
+      align-items: center;
+    }
+    @media (min-width: 900px) {
+      .premium-inner { grid-template-columns: 1.2fr 1fr; gap: 48px; }
+    }
+    .premium-eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.18);
+      color: #fff; font-size: 11px; font-weight: 900;
+      text-transform: uppercase; letter-spacing: 0.12em;
+      backdrop-filter: blur(8px);
+    }
+    .premium h2 { font-size: clamp(32px, 4.5vw, 48px); color: #fff; margin-top: 18px; }
+    .premium p  { margin-top: 16px; color: rgba(255,255,255,0.9); font-size: 17px; max-width: 480px; line-height: 1.55; }
+    .premium-ctas { margin-top: 32px; display: flex; gap: 12px; flex-wrap: wrap; }
+    .premium-benefits {
+      background: rgba(255,255,255,0.14);
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: var(--r-xl);
+      padding: 24px;
+      backdrop-filter: blur(14px);
+    }
+    .premium-benefits h3 { color: #fff; font-size: 15px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.1em; }
+    .premium-benefits ul { list-style: none; padding: 0; margin: 16px 0 0; display: grid; gap: 12px; }
+    .premium-benefits li {
+      display: flex; align-items: center; gap: 12px;
+      color: #fff; font-weight: 700; font-size: 15px;
+    }
+    .check-badge {
+      width: 26px; height: 26px; border-radius: 50%;
+      background: rgba(255,255,255,0.95);
+      color: #6366F1; font-weight: 900; font-size: 14px;
+      display: grid; place-items: center;
+      flex-shrink: 0;
+    }
+
+    /* ============================================================
+       Footer
+       ============================================================ */
+    .footer {
+      background: var(--bg-dark);
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding: 48px 0 36px;
+    }
+    .footer-inner {
+      display: flex; flex-wrap: wrap; gap: 24px;
+      align-items: center; justify-content: space-between;
+    }
+    .footer-links { display: flex; gap: 24px; flex-wrap: wrap; }
+    .footer-links a { color: var(--text-3); text-decoration: none; font-size: 13px; font-weight: 700; transition: color 180ms; }
+    .footer-links a:hover { color: var(--text-1); }
+    .footer-copy { color: var(--text-4); font-size: 12px; font-weight: 600; margin-top: 24px; text-align: center; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.05); }
+
+    /* ============================================================
+       Swipe demo section — the signature mechanic
+       ============================================================ */
+    .swipe-demo {
+      position: relative;
+      padding: 96px 0;
+    }
+    .swipe-grid {
+      display: grid;
+      gap: 56px;
+      align-items: center;
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 900px) {
+      .swipe-grid { grid-template-columns: 1fr 1fr; gap: 64px; }
+    }
+
+    /* Stage */
+    .swipe-stage {
+      position: relative;
+      height: 460px;
+      border-radius: var(--r-2xl);
+      background:
+        radial-gradient(circle at 50% 50%, rgba(139,92,246,0.12), transparent 60%),
+        var(--card-bg);
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      overflow: hidden;
+    }
+
+    /* Edge glows */
+    .edge-glow {
+      position: absolute;
+      top: 0; bottom: 0;
+      width: 42%;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 280ms var(--ease);
+      z-index: 1;
+    }
+    /* LEFT = dominada (verde) · RIGHT = fallo (rojo) */
+    .edge-glow.left {
+      left: 0;
+      background: linear-gradient(to right, rgba(34,197,94,0.38), transparent 80%);
+    }
+    .edge-glow.right {
+      right: 0;
+      background: linear-gradient(to left, rgba(239,68,68,0.38), transparent 80%);
+    }
+    .edge-glow.visible { opacity: 1; }
+
+    /* Side markers */
+    .side-marker {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-size: 10px;
+    }
+    .side-marker.left  { left: 18px;  color: #4ADE80; }
+    .side-marker.right { right: 18px; color: #F87171; }
+    .side-marker .ring {
+      width: 52px; height: 52px;
+      border-radius: 50%;
+      display: grid; place-items: center;
+      background: rgba(255,255,255,0.04);
+      border: 1.5px solid currentColor;
+      box-shadow: 0 0 24px -4px currentColor;
+    }
+    .side-marker .ring svg { width: 22px; height: 22px; stroke: currentColor; }
+    .side-marker .sub {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: none;
+      color: var(--text-3);
+      line-height: 1.3;
+      text-align: center;
+    }
+
+    /* Card stack */
+    .swipe-card-stack {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 240px;
+      height: 320px;
+      z-index: 3;
+    }
+    .swipe-card {
+      position: absolute;
+      inset: 0;
+      border-radius: 26px;
+      background: linear-gradient(160deg, rgba(255,255,255,0.14) 0%, rgba(255,255,255,0.05) 100%);
+      border: 1px solid rgba(255,255,255,0.18);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      box-shadow: 0 20px 60px -20px rgba(12,14,30,0.75), 0 0 0 1px rgba(255,255,255,0.04) inset;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 28px 22px;
+      gap: 10px;
+      will-change: transform, opacity;
+      overflow: hidden;
+    }
+    .swipe-card.behind-2 {
+      transform: translateY(22px) scale(0.9);
+      opacity: 0.4;
+      z-index: 1;
+    }
+    .swipe-card.behind-1 {
+      transform: translateY(12px) scale(0.95);
+      opacity: 0.7;
+      z-index: 2;
+    }
+    .swipe-card.top {
+      z-index: 3;
+      transition: transform 300ms var(--ease);
+    }
+    .swipe-card .card-lang {
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent-blue);
+      background: linear-gradient(135deg, #60A5FA, #A78BFA);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .swipe-card .card-word {
+      font-size: 36px;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      color: var(--text-1);
+      text-align: center;
+      line-height: 1;
+    }
+    .swipe-card .card-hint {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-3);
+    }
+    .swipe-card .card-flag {
+      width: 44px;
+      height: 30px;
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: 0 4px 14px -4px rgba(0,0,0,0.6), inset 0 0 0 1px rgba(255,255,255,0.15);
+      margin-bottom: 4px;
+    }
+    .swipe-card .card-flag svg { width: 100%; height: 100%; display: block; }
+    .swipe-card .card-ipa {
+      font-size: 12px;
+      font-weight: 600;
+      font-style: italic;
+      color: var(--text-4);
+      margin-top: -4px;
+    }
+
+    /* Card tint overlays */
+    .card-tint {
+      position: absolute; inset: 0; border-radius: 26px;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 220ms var(--ease);
+    }
+    .card-tint.save { background: linear-gradient(135deg, rgba(34,197,94,0.30), rgba(6,182,212,0.22)); box-shadow: inset 0 0 0 2px rgba(74,222,128,0.55); }
+    .card-tint.skip { background: linear-gradient(135deg, rgba(239,68,68,0.30), rgba(249,115,22,0.20)); box-shadow: inset 0 0 0 2px rgba(248,113,113,0.55); }
+    .card-tint.visible { opacity: 1; }
+
+    /* Stamps */
+    .stamp {
+      position: absolute;
+      top: 18px;
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: 2.5px solid currentColor;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      opacity: 0;
+      transition: opacity 180ms var(--ease);
+      pointer-events: none;
+      text-transform: uppercase;
+      background: rgba(12,14,30,0.35);
+      backdrop-filter: blur(4px);
+    }
+    /* Stamp side follows motion direction: save stamps on LEFT, skip on RIGHT */
+    .stamp.save { left: 16px;  color: #4ADE80; transform: rotate(-14deg); text-shadow: 0 0 12px rgba(34,197,94,0.6); }
+    .stamp.skip { right: 16px; color: #F87171; transform: rotate(14deg);  text-shadow: 0 0 12px rgba(239,68,68,0.6); }
+    .stamp.visible { opacity: 1; }
+
+    /* Hint pill below stage */
+    .swipe-hint-row {
+      position: absolute;
+      bottom: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 10px;
+      z-index: 4;
+    }
+    .swipe-hint-pill {
+      font-size: 11px;
+      font-weight: 800;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: var(--text-3);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      backdrop-filter: blur(10px);
+    }
+    .swipe-hint-pill.live { color: var(--text-1); border-color: rgba(139,92,246,0.5); background: rgba(139,92,246,0.14); }
+
+    /* Keyframes */
+    @keyframes flyRight {
+      from { transform: rotate(9deg); opacity: 1; }
+      to   { transform: translateX(460px) rotate(22deg); opacity: 0; }
+    }
+    @keyframes flyLeft {
+      from { transform: rotate(-9deg); opacity: 1; }
+      to   { transform: translateX(-460px) rotate(-22deg); opacity: 0; }
+    }
+    @keyframes flyUp {
+      from { transform: translateY(-14px) scale(1.02); opacity: 1; }
+      to   { transform: translateY(-360px) scale(0.8); opacity: 0; }
+    }
+
+    /* Pequeño indicador arriba (difícil) */
+    .up-marker {
+      position: absolute;
+      top: 14px; left: 50%;
+      transform: translateX(-50%);
+      display: flex; align-items: center; gap: 8px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: rgba(250,204,21,0.12);
+      border: 1px solid rgba(250,204,21,0.35);
+      color: #FDE047;
+      font-size: 10px; font-weight: 900;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      z-index: 2;
+      box-shadow: 0 0 20px -4px rgba(250,204,21,0.5);
+    }
+
+    /* Explainer column */
+    .swipe-explainer h2 { font-size: clamp(32px, 4.5vw, 48px); }
+    .swipe-explainer .lead {
+      margin-top: 16px;
+      color: var(--text-2);
+      font-size: 17px;
+      line-height: 1.55;
+      max-width: 520px;
+    }
+    .swipe-keys {
+      margin-top: 28px;
+      display: grid;
+      gap: 12px;
+    }
+    .swipe-key {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 18px;
+      border-radius: 18px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(10px);
+      transition: border-color 220ms var(--ease), transform 220ms var(--ease);
+    }
+    .swipe-key.active {
+      border-color: rgba(139,92,246,0.55);
+      background: rgba(139,92,246,0.1);
+      transform: translateX(4px);
+    }
+    .swipe-key-ic {
+      width: 44px; height: 44px; border-radius: 14px;
+      display: grid; place-items: center;
+      flex-shrink: 0;
+      font-weight: 900;
+    }
+    .swipe-key-ic.left  { background: rgba(34,197,94,0.15);  color: #4ADE80; box-shadow: inset 0 0 0 1px rgba(34,197,94,0.35); }
+    .swipe-key-ic.right { background: rgba(239,68,68,0.15);  color: #F87171; box-shadow: inset 0 0 0 1px rgba(239,68,68,0.35); }
+    .swipe-key-ic.up    { background: rgba(250,204,21,0.14); color: #FDE047; box-shadow: inset 0 0 0 1px rgba(250,204,21,0.35); }
+    .swipe-key-ic svg { width: 22px; height: 22px; }
+    .swipe-key-text .t { font-size: 15px; font-weight: 900; color: var(--text-1); }
+    .swipe-key-text .d { font-size: 13px; font-weight: 600; color: var(--text-3); margin-top: 2px; }
+
+    /* ============================================================
+       Reveal on scroll
+       ============================================================ */
+    .reveal { opacity: 0; transform: translateY(16px); transition: opacity 700ms var(--ease), transform 700ms var(--ease); }
+    .reveal.in { opacity: 1; transform: translateY(0); }
+
+    /* Decorative lines shown on behind-stack cards (no text, just depth) */
+    .card-deco {
+      position: absolute;
+      inset: 0;
+      border-radius: 26px;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    .card-deco::before,
+    .card-deco::after {
+      content: '';
+      position: absolute;
+      left: 28px; right: 28px;
+      height: 10px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, rgba(255,255,255,0.14), rgba(255,255,255,0.04));
+    }
+    .card-deco::before { top: 44%; opacity: 0.55; }
+    .card-deco::after  { top: calc(44% + 22px); width: 60%; opacity: 0.35; }
+    .swipe-card.behind-1 .card-deco::before { background: linear-gradient(90deg, rgba(96,165,250,0.28), rgba(139,92,246,0.14)); }
+    .swipe-card.behind-2 .card-deco::before { background: linear-gradient(90deg, rgba(139,92,246,0.24), rgba(236,72,153,0.12)); }
+    /* Belt-and-suspenders: hide any card text that somehow ends up on a behind card */
+    .swipe-card.behind-1 .card-lang,
+    .swipe-card.behind-1 .card-word,
+    .swipe-card.behind-1 .card-ipa,
+    .swipe-card.behind-1 .card-hint,
+    .swipe-card.behind-2 .card-lang,
+    .swipe-card.behind-2 .card-word,
+    .swipe-card.behind-2 .card-ipa,
+    .swipe-card.behind-2 .card-hint { opacity: 0; visibility: hidden; }
+
+    /* ============================================================
+       LANGUAGES GRID
+       ============================================================ */
+    .lang-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 14px;
+    }
+    .lang-card {
+      position: relative;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 14px;
+      padding: 16px 18px;
+      border-radius: 18px;
+      background: linear-gradient(160deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+      border: 1px solid rgba(255,255,255,0.1);
+      backdrop-filter: blur(14px);
+      text-align: left;
+      color: var(--text-1);
+      font-family: inherit;
+      cursor: pointer;
+      transition: transform 220ms var(--ease-spring), border-color 220ms, background 220ms;
+      overflow: hidden;
+    }
+    .lang-card.available::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      padding: 1px;
+      background: linear-gradient(135deg, rgba(139,92,246,0.6), rgba(96,165,250,0.1) 40%, rgba(34,211,238,0.0));
+      -webkit-mask: linear-gradient(#000,#000) content-box, linear-gradient(#000,#000);
+      -webkit-mask-composite: xor;
+              mask-composite: exclude;
+      pointer-events: none;
+      opacity: 0.6;
+      transition: opacity 220ms;
+    }
+    .lang-card.available:hover {
+      transform: translateY(-2px);
+      border-color: rgba(139,92,246,0.35);
+    }
+    .lang-card.available:hover::before { opacity: 1; }
+    .lang-card.coming {
+      cursor: default;
+      opacity: 0.72;
+      background: linear-gradient(160deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+      border-style: dashed;
+      border-color: rgba(255,255,255,0.13);
+    }
+    .lang-card.coming .lang-name { color: var(--text-2); }
+    .lang-card.vote .lang-name { color: var(--text-1); }
+    .lang-card.vote { border-color: rgba(250,204,21,0.3); }
+
+    .lang-flag {
+      width: 42px;
+      height: 30px;
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px -4px rgba(0,0,0,0.55), inset 0 0 0 1px rgba(255,255,255,0.14);
+      flex-shrink: 0;
+      background: rgba(255,255,255,0.04);
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      font-size: 14px;
+      color: var(--text-3);
+    }
+    .lang-flag svg { width: 100%; height: 100%; display: block; }
+    .lang-flag.ghost { color: var(--text-4); background: rgba(255,255,255,0.03); box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08); }
+
+    .lang-meta { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+    .lang-name { font-size: 15px; font-weight: 800; letter-spacing: -0.01em; }
+    .lang-hello { font-size: 12px; font-weight: 600; color: var(--text-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    .lang-chip {
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 5px 10px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+    .lang-chip.ok { color: #4ADE80; background: rgba(34,197,94,0.14); box-shadow: inset 0 0 0 1px rgba(34,197,94,0.32); }
+    .lang-chip.soon { color: var(--text-3); background: rgba(255,255,255,0.06); box-shadow: inset 0 0 0 1px rgba(255,255,255,0.1); }
+    .lang-chip.vote-chip { color: #FDE047; background: rgba(250,204,21,0.12); box-shadow: inset 0 0 0 1px rgba(250,204,21,0.4); }
+
+    /* Hero rotator word keeps width steady */
+    .grad-rotator { display: inline-block; min-width: 4.5ch; transition: opacity 200ms var(--ease); }
+
+    /* Small adjustments for narrow screens */
+    @media (max-width: 720px) {
+      .container { padding: 0 20px; }
+      h1 { font-size: clamp(40px, 11vw, 56px) !important; }
+      h2 { font-size: clamp(28px, 7.2vw, 40px) !important; }
+      .lead { font-size: 16px; }
+      .hero { padding: 32px 0 56px; }
+      .hero-ctas { flex-direction: column; align-items: stretch; }
+      .hero-ctas .btn { justify-content: center; width: 100%; }
+      .section-head { text-align: center; }
+      .nav-inner { padding: 14px 0; }
+      .brand-name { font-size: 15px; }
+      .btn-sm { font-size: 12px; padding: 8px 14px; }
+
+      /* Swipe section */
+      .swipe-stage { height: 400px; border-radius: 28px; }
+      .swipe-card-stack { width: 68vw; max-width: 240px; height: 84vw; max-height: 300px; }
+      .swipe-card { padding: 22px 18px; border-radius: 22px; }
+      .swipe-card .card-word { font-size: 30px; }
+      .swipe-card .card-hint { font-size: 13px; }
+      .side-marker { display: none; }
+      .edge-glow { width: 80px; }
+      .stamp { font-size: 11px; padding: 5px 10px; }
+      .swipe-keys { gap: 10px; }
+      .swipe-key { padding: 14px 14px; gap: 12px; }
+      .swipe-key-ic { width: 40px; height: 40px; border-radius: 12px; }
+      .swipe-key-text .t { font-size: 14px; }
+      .swipe-key-text .d { font-size: 12px; }
+      .swipe-explainer h2 br { display: none; }
+    }
+    @media (max-width: 540px) {
+      .hero { padding: 32px 0 48px; }
+      .phone { width: 260px; }
+      .gam-widget { padding: 18px; }
+      .premium { padding: 36px 20px; }
+      section { padding: 56px 0; }
+      .feature-card, .mode-card { padding: 22px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-bg" aria-hidden="true"></div>
+  <div class="stars" aria-hidden="true"></div>
+
+  <!-- NAV -->
+  <header class="nav">
+    <div class="nav-inner">
+      <a href="#top" class="brand">
+        <img src="assets/app-icon.png" alt="" class="brand-logo" />
+        <span class="brand-name">LingoSwipe</span>
+      </a>
+      <nav class="nav-links" aria-label="Principal">
+        <a href="#features">Características</a>
+        <a href="#gamification">Gamificación</a>
+        <a href="#modes">Modos</a>
+        <a href="#progress">Progreso</a>
+        <a href="#premium">Premium</a>
+      </nav>
+      <a href="#premium" class="btn btn-primary btn-sm">Descargar</a>
+    </div>
+  </header>
+
+  <main id="top">
+    <!-- HERO -->
+    <section class="hero">
+      <div class="container">
+        <div class="hero-grid">
+          <div class="reveal">
+            <span class="hero-badge">
+              <span class="dot"></span>
+              4 idiomas disponibles · más en camino
+            </span>
+
+            <h1>
+              Aprende <span class="grad-text grad-rotator" id="heroRotator">idiomas</span><br>
+              con LingoSwipe.
+            </h1>
+
+            <p class="lead">
+              Tarjetas inteligentes + gamificación + sistema SRS.
+              Sesiones cortas, progreso visible y memoria a largo plazo — desde el primer swipe.
+            </p>
+
+            <div class="hero-ctas">
+              <a href="#premium" class="btn btn-primary">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Descargar gratis
+              </a>
+              <a href="#features" class="btn btn-ghost">
+                Ver cómo funciona
+              </a>
+            </div>
+
+            <div class="hero-meta">
+              <span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 15 8.5 22 9.3l-5 4.9 1.2 7-6.2-3.3L5.8 21.2 7 14.2 2 9.3l7-.8z"/></svg>
+                4.9 en App Store
+              </span>
+              <span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="3"/><line x1="12" y1="18" x2="12" y2="18"/></svg>
+                iPhone · iOS 16+
+              </span>
+              <span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"/><path d="M12 18v4"/><path d="m4.93 4.93 2.83 2.83"/><path d="m16.24 16.24 2.83 2.83"/><path d="M2 12h4"/><path d="M18 12h4"/></svg>
+                Sin anuncios en Premium
+              </span>
+            </div>
+          </div>
+
+          <!-- Phone mockup -->
+          <div class="reveal phone-wrap">
+            <div class="phone-glow" aria-hidden="true"></div>
+            <div class="phone">
+              <div class="phone-screen">
+                <div class="phone-stars" aria-hidden="true"></div>
+                <div class="phone-notch" aria-hidden="true"></div>
+
+                <div class="status-bar">
+                  <span>9:41</span>
+                  <span class="status-bar-right" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M2 20h2v-4H2zm5 0h2V10H7zm5 0h2V4h-2zm5 0h2v-8h-2z"/></svg>
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M1 9l2 2a14 14 0 0 1 18 0l2-2a17 17 0 0 0-22 0z"/><path d="M5 13l2 2a8 8 0 0 1 10 0l2-2a11 11 0 0 0-14 0z"/><circle cx="12" cy="19" r="2"/></svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="8" width="18" height="10" rx="2"/><rect x="4" y="10" width="13" height="6" rx="1" fill="currentColor"/><line x1="22" y1="11" x2="22" y2="15"/></svg>
+                  </span>
+                </div>
+
+                <div class="phone-content">
+                  <!-- Home header / widget -->
+                  <div class="home-header">
+                    <div class="avatar">L</div>
+                    <div class="home-header-info">
+                      <div class="name">Hola, Lucía</div>
+                      <div class="lvl-row">
+                        <span class="lvl-label">Nv 12</span>
+                        <span class="lvl-bar"><span class="lvl-fill"></span></span>
+                      </div>
+                    </div>
+                    <span class="streak-badge">🔥 27</span>
+                  </div>
+
+                  <!-- Main learn card (premium-like gradient) -->
+                  <div class="learn-card">
+                    <div class="label">Continúa aprendiendo</div>
+                    <div class="word">die Katze</div>
+                    <div class="sub">→ el gato · swipe para continuar</div>
+                    <div class="cta">
+                      Empezar lección
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                    </div>
+                  </div>
+
+                  <!-- Stats row -->
+                  <div class="stats-row">
+                    <div class="stat">
+                      <div class="ic">⚡</div>
+                      <div class="n">2 450</div>
+                      <div class="l">XP</div>
+                    </div>
+                    <div class="stat">
+                      <div class="ic" style="color:#EF4444">❤</div>
+                      <div class="n">5/5</div>
+                      <div class="l">Vidas</div>
+                    </div>
+                    <div class="stat">
+                      <div class="ic" style="color:#FACC15">💎</div>
+                      <div class="n">320</div>
+                      <div class="l">Gemas</div>
+                    </div>
+                  </div>
+
+                  <!-- Tiles (modes) -->
+                  <div class="tiles" aria-hidden="true">
+                    <div class="tile tile-swipe"><div><div class="glyph">🃏</div>Swipe</div></div>
+                    <div class="tile tile-audio"><div><div class="glyph">🎧</div>Audio</div></div>
+                    <div class="tile tile-art"><div><div class="glyph">📖</div>der/die</div></div>
+                    <div class="tile tile-chest"><div><div class="glyph">🎁</div>Cofre</div></div>
+                  </div>
+
+                  <!-- Tab bar -->
+                  <div class="tabbar" aria-hidden="true">
+                    <div class="tabbar-item active"><div class="tg">🏠</div>Inicio</div>
+                    <div class="tabbar-item"><div class="tg">🗺️</div>Mundos</div>
+                    <div class="tabbar-item"><div class="tg">⚔️</div>Liga</div>
+                    <div class="tabbar-item"><div class="tg">👤</div>Perfil</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SWIPE DEMO -->
+    <section id="swipe" class="swipe-demo">
+      <div class="container">
+        <div class="swipe-grid">
+          <!-- Stage -->
+          <div class="reveal">
+            <div class="swipe-stage" id="swipeStage">
+              <div class="edge-glow left" id="edgeLeft"></div>
+              <div class="edge-glow right" id="edgeRight"></div>
+
+              <div class="up-marker" id="upMarker" style="opacity: 0; transition: opacity 220ms var(--ease);">
+                ↑ Difícil · repaso prioritario
+              </div>
+
+              <!-- Left marker -->
+              <div class="side-marker left" aria-hidden="true">
+                <div class="ring">
+                  <svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5m0 0l6 6M5 12l6-6"/>
+                  </svg>
+                </div>
+                <div style="color:#4ADE80">Dominé</div>
+                <div class="sub">Al final<br>del mazo</div>
+              </div>
+
+              <!-- Right marker -->
+              <div class="side-marker right" aria-hidden="true">
+                <div class="ring">
+                  <svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 12h14m0 0l-6-6m6 6l-6 6"/>
+                  </svg>
+                </div>
+                <div style="color:#F87171">Fallo</div>
+                <div class="sub">Vuelve<br>pronto</div>
+              </div>
+
+              <!-- Card stack -->
+              <div class="swipe-card-stack">
+                <div class="swipe-card behind-2" id="cardBehind2" aria-hidden="true">
+                  <span class="card-deco"></span>
+                </div>
+                <div class="swipe-card behind-1" id="cardBehind1" aria-hidden="true">
+                  <span class="card-deco"></span>
+                </div>
+                <div class="swipe-card top" id="cardTop">
+                  <div class="card-tint save" id="tintSave"></div>
+                  <div class="card-tint skip" id="tintSkip"></div>
+                  <div class="stamp save" id="stampSave">Dominé</div>
+                  <div class="stamp skip" id="stampSkip">Fallo</div>
+                  <div class="card-flag" id="cardFlag" aria-hidden="true"></div>
+                  <div class="card-lang" id="cardLang">Alemán</div>
+                  <div class="card-word" id="cardWord">Hallo</div>
+                  <div class="card-ipa"  id="cardIpa">/ˈhalo/</div>
+                  <div class="card-hint" id="cardHint">Hola</div>
+                </div>
+              </div>
+
+              <!-- Hint pill -->
+              <div class="swipe-hint-row">
+                <span class="swipe-hint-pill" id="hintPill">
+                  <span id="hintDot" style="width:6px;height:6px;border-radius:50%;background:#8B5CF6;box-shadow:0 0 8px #8B5CF6"></span>
+                  <span id="hintText">Mira el swipe en acción</span>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Explainer -->
+          <div class="reveal swipe-explainer">
+            <span class="eyebrow">El gesto que cambia todo</span>
+            <h2>Un swipe, <span class="grad-text">una decisión</span>.</h2>
+            <p class="lead">
+              Tú le dices a la app cuánto sabes. Ella calcula cuándo volver a mostrártelo
+              — repetición espaciada real, sin que tengas que pensar en ello.
+            </p>
+
+            <div class="swipe-keys" id="swipeKeys">
+              <div class="swipe-key" data-dir="left">
+                <div class="swipe-key-ic left">
+                  <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5m0 0l6 6M5 12l6-6"/></svg>
+                </div>
+                <div class="swipe-key-text">
+                  <div class="t">Izquierda — Dominada</div>
+                  <div class="d">Ya la sabes. Vuelve al final del mazo.</div>
+                </div>
+              </div>
+              <div class="swipe-key" data-dir="right">
+                <div class="swipe-key-ic right">
+                  <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m0 0l-6-6m6 6l-6 6"/></svg>
+                </div>
+                <div class="swipe-key-text">
+                  <div class="t">Derecha — Fallo</div>
+                  <div class="d">No te sale. Vuelve pronto para reforzar.</div>
+                </div>
+              </div>
+              <div class="swipe-key" data-dir="up">
+                <div class="swipe-key-ic up">
+                  <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5m0 0l-6 6m6-6l6 6"/></svg>
+                </div>
+                <div class="swipe-key-text">
+                  <div class="t">Arriba — Difícil</div>
+                  <div class="d">La sabes a medias. Repaso con prioridad.</div>
+                </div>
+              </div>
+            </div>
+
+            <div style="margin-top: 28px; display: flex; gap: 12px; flex-wrap: wrap;">
+              <button type="button" class="btn btn-ghost btn-sm" id="btnSwipeLeft">← Dominada</button>
+              <button type="button" class="btn btn-ghost btn-sm" id="btnSwipeUp">↑ Difícil</button>
+              <button type="button" class="btn btn-ghost btn-sm" id="btnSwipeRight">Fallo →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LANGUAGES -->
+    <section id="languages" style="padding: 72px 0;">
+      <div class="container">
+        <div class="section-head reveal" style="margin-bottom: 40px;">
+          <span class="eyebrow">Un pasaporte, muchos idiomas</span>
+          <h2>4 idiomas ya. <span class="grad-text">Más en camino</span>.</h2>
+          <p>Elige tu próximo destino. Mismo sistema de swipe, mismo mazo inteligente — vocabulario nativo en cada lengua.</p>
+        </div>
+        <div class="lang-grid reveal" id="langGrid">
+          <button class="lang-card available" data-flag="de" type="button">
+            <span class="lang-flag"></span>
+            <span class="lang-meta">
+              <span class="lang-name">Alemán</span>
+              <span class="lang-hello">„Hallo"</span>
+            </span>
+            <span class="lang-chip ok">Disponible</span>
+          </button>
+          <button class="lang-card available" data-flag="gb" type="button">
+            <span class="lang-flag"></span>
+            <span class="lang-meta">
+              <span class="lang-name">Inglés</span>
+              <span class="lang-hello">"Hello"</span>
+            </span>
+            <span class="lang-chip ok">Disponible</span>
+          </button>
+          <button class="lang-card available" data-flag="fr" type="button">
+            <span class="lang-flag"></span>
+            <span class="lang-meta">
+              <span class="lang-name">Francés</span>
+              <span class="lang-hello">« Bonjour »</span>
+            </span>
+            <span class="lang-chip ok">Disponible</span>
+          </button>
+          <button class="lang-card available" data-flag="bg" type="button">
+            <span class="lang-flag"></span>
+            <span class="lang-meta">
+              <span class="lang-name">Búlgaro</span>
+              <span class="lang-hello">„Здравей"</span>
+            </span>
+            <span class="lang-chip ok">Disponible</span>
+          </button>
+          <div class="lang-card coming" aria-hidden="true">
+            <span class="lang-flag ghost">?</span>
+            <span class="lang-meta">
+              <span class="lang-name">Italiano</span>
+              <span class="lang-hello">Próximamente</span>
+            </span>
+            <span class="lang-chip soon">Pronto</span>
+          </div>
+          <div class="lang-card coming" aria-hidden="true">
+            <span class="lang-flag ghost">?</span>
+            <span class="lang-meta">
+              <span class="lang-name">Portugués</span>
+              <span class="lang-hello">Próximamente</span>
+            </span>
+            <span class="lang-chip soon">Pronto</span>
+          </div>
+          <div class="lang-card coming" aria-hidden="true">
+            <span class="lang-flag ghost">+</span>
+            <span class="lang-meta">
+              <span class="lang-name">Japonés</span>
+              <span class="lang-hello">Próximamente</span>
+            </span>
+            <span class="lang-chip soon">Pronto</span>
+          </div>
+          <div class="lang-card coming vote" aria-hidden="true">
+            <span class="lang-flag ghost">★</span>
+            <span class="lang-meta">
+              <span class="lang-name">Vota el siguiente</span>
+              <span class="lang-hello">Tu voto cuenta</span>
+            </span>
+            <span class="lang-chip vote-chip">Votar</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section id="features">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="eyebrow">Por qué funciona</span>
+          <h2>Diseñado para que <span class="grad-text">vuelvas cada día</span>.</h2>
+          <p>Tres pilares que convierten el estudio en un hábito agradable: constancia, contexto y variedad.</p>
+        </div>
+
+        <div class="feature-grid">
+          <div class="feature-card reveal">
+            <div class="feature-icon icon-streak">🔥</div>
+            <h3>Rachas diarias</h3>
+            <p>Sesiones cortas, progreso visible. Tu racha te empuja a volver sin castigos raros — solo motivación.</p>
+          </div>
+          <div class="feature-card reveal">
+            <div class="feature-icon icon-map">🗺️</div>
+            <h3>Mundos y categorías</h3>
+            <p>Viajes, trabajo, compras, social… aprende por contexto para que puedas usar lo que sabes desde ya.</p>
+          </div>
+          <div class="feature-card reveal">
+            <div class="feature-icon icon-bolt">⚡</div>
+            <h3>Modo Supervivencia</h3>
+            <p>Respuestas a contrarreloj con vidas limitadas. Presión amable para pensar rápido y fijar ideas.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- GAMIFICATION -->
+    <section id="gamification" class="gamification">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="eyebrow">Gamificación</span>
+          <h2>Tu progreso, como <span class="grad-text">un videojuego</span>.</h2>
+          <p>XP, niveles, vidas, rachas y cofres — con propósito educativo, no adornos.</p>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card reveal">
+            <div class="ic ic-xp">⚡</div>
+            <div class="eyebrow">XP acumulado</div>
+            <div class="value">2 450</div>
+            <div class="desc">+180 esta semana</div>
+          </div>
+          <div class="stat-card reveal">
+            <div class="ic ic-level">🎯</div>
+            <div class="eyebrow">Nivel actual</div>
+            <div class="value">12</div>
+            <div class="desc">72% al nivel 13</div>
+          </div>
+          <div class="stat-card reveal">
+            <div class="ic ic-streak">🔥</div>
+            <div class="eyebrow">Racha activa</div>
+            <div class="value">27 d</div>
+            <div class="desc">mejor racha: 41 d</div>
+          </div>
+          <div class="stat-card reveal">
+            <div class="ic ic-hearts">❤️</div>
+            <div class="eyebrow">Vidas</div>
+            <div class="value">5/5</div>
+            <div class="desc">recuperación cada 30 min</div>
+          </div>
+        </div>
+
+        <!-- Home header widget replicated -->
+        <div class="gam-widget reveal">
+          <div class="gam-avatar">L</div>
+          <div class="gam-info">
+            <div class="name">Lucía</div>
+            <div class="sub">Nivel 12 · Diamante II · top 12%</div>
+            <div class="lvl-wrap">
+              <span class="lvl-bar"><span class="lvl-fill"></span></span>
+              <span class="lvl-label">1 800 / 2 500 XP</span>
+            </div>
+          </div>
+          <span class="gam-streak">🔥 Racha 27</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- MODES -->
+    <section id="modes">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="eyebrow">Modos de juego</span>
+          <h2>Varios modos, <span class="grad-text">un solo hábito</span>.</h2>
+          <p>Cambia de formato cuando te aburras. Cada modo refuerza algo distinto: reconocimiento, producción, audio o género.</p>
+        </div>
+
+        <div class="modes-grid">
+          <div class="mode reveal">
+            <div class="mode-icon mi-flash">🃏</div>
+            <div>
+              <h3>Flashcards · Swipe ← / →</h3>
+              <p>Izquierda = aún no, derecha = aprendida. Gestos rápidos, feedback inmediato.</p>
+            </div>
+          </div>
+          <div class="mode reveal">
+            <div class="mode-icon mi-chall">🎯</div>
+            <div>
+              <h3>Modo Desafío</h3>
+              <p>Retos diarios con vocabulario mezclado y contexto sorpresa.</p>
+            </div>
+          </div>
+          <div class="mode reveal">
+            <div class="mode-icon mi-art">📖</div>
+            <div>
+              <h3>Modo Artículos</h3>
+              <p>der / die / das — el problema clásico del alemán, convertido en juego.</p>
+            </div>
+          </div>
+          <div class="mode reveal">
+            <div class="mode-icon mi-audio">🎧</div>
+            <div>
+              <h3>Modo Audio</h3>
+              <p>Comprensión auditiva en píldoras: escucha, reconoce y responde.</p>
+            </div>
+          </div>
+          <div class="mode reveal">
+            <div class="mode-icon mi-surv">⚔️</div>
+            <div>
+              <h3>Modo Supervivencia</h3>
+              <p>Tiempo limitado, vidas contadas, presión amable para fijar memoria.</p>
+            </div>
+          </div>
+          <div class="mode reveal">
+            <div class="mode-icon mi-srs">🧠</div>
+            <div>
+              <h3>Repaso SRS</h3>
+              <p>Repetición espaciada: te mostramos justo lo que estás a punto de olvidar.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SRS / PROGRESS -->
+    <section id="progress">
+      <div class="container">
+        <div class="srs-grid">
+          <div class="reveal srs-ring-wrap">
+            <div class="srs-ring-bg" aria-hidden="true"></div>
+            <div class="srs-ring">
+              <svg viewBox="0 0 200 200">
+                <defs>
+                  <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%"  stop-color="#22C55E"/>
+                    <stop offset="100%" stop-color="#06B6D4"/>
+                  </linearGradient>
+                </defs>
+                <circle class="ring-bg"   cx="100" cy="100" r="86" stroke-width="14" fill="none"/>
+                <circle class="ring-fill" cx="100" cy="100" r="86" stroke-width="14" fill="none"
+                        stroke-dasharray="540" stroke-dashoffset="162"/>
+              </svg>
+              <div class="srs-ring-center">
+                <div>
+                  <div class="pct grad-text" style="background: linear-gradient(135deg, #22C55E, #06B6D4); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">70%</div>
+                  <div class="lbl">Progreso global</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="srs-stats">
+              <div class="srs-stat"><div class="n">412</div><div class="l">Aprendidas</div></div>
+              <div class="srs-stat"><div class="n">48</div><div class="l">En repaso</div></div>
+              <div class="srs-stat"><div class="n">12 d</div><div class="l">Próx. repaso</div></div>
+            </div>
+          </div>
+
+          <div class="reveal">
+            <span class="eyebrow">Progreso inteligente</span>
+            <h2>Sistema <span class="grad-text">SRS</span> que se adapta a ti.</h2>
+            <p style="margin-top: 16px; color: var(--text-2); font-size: 17px; line-height: 1.55;">
+              Cada palabra tiene su propio ritmo: te la volvemos a mostrar justo antes de que la olvides.
+              Estudias menos y recuerdas más.
+            </p>
+
+            <div class="srs-bullets">
+              <div class="srs-bullet">
+                <div class="srs-bullet-dot">✓</div>
+                <div>
+                  <div class="t">Repetición espaciada real</div>
+                  <div class="d">Intervalos personalizados según cómo respondes a cada tarjeta.</div>
+                </div>
+              </div>
+              <div class="srs-bullet">
+                <div class="srs-bullet-dot">✓</div>
+                <div>
+                  <div class="t">Priorización automática</div>
+                  <div class="d">Lo que más te cuesta aparece primero — sin que tengas que elegirlo.</div>
+                </div>
+              </div>
+              <div class="srs-bullet">
+                <div class="srs-bullet-dot">✓</div>
+                <div>
+                  <div class="t">Memoria a largo plazo</div>
+                  <div class="d">No repetición mecánica: refuerzo basado en curvas de olvido.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PREMIUM -->
+    <section id="premium">
+      <div class="container">
+        <div class="premium reveal">
+          <div class="premium-inner">
+            <div>
+              <span class="premium-eyebrow">✨ LingoSwipe Premium</span>
+              <h2>Más mundos, menos fricción, cero anuncios.</h2>
+              <p>Acelera tu aprendizaje con acceso completo, recuperación rápida y recompensas más frecuentes.</p>
+              <div class="premium-ctas">
+                <a href="#" class="btn btn-white">
+                  Probar Premium
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                </a>
+                <a href="#" class="btn btn-ghost" style="background: rgba(255,255,255,0.18); border-color: rgba(255,255,255,0.3); color: #fff;">
+                  Ver planes
+                </a>
+              </div>
+            </div>
+
+            <div class="premium-benefits">
+              <h3>Incluye</h3>
+              <ul>
+                <li><span class="check-badge">✓</span> Sin anuncios — nunca</li>
+                <li><span class="check-badge">✓</span> Cofres cada 2 h</li>
+                <li><span class="check-badge">✓</span> Vidas se recargan más rápido</li>
+                <li><span class="check-badge">✓</span> Acceso completo a todos los mundos</li>
+                <li><span class="check-badge">✓</span> Modos Pro exclusivos</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-inner">
+        <a href="#top" class="brand">
+          <img src="assets/app-icon.png" alt="" class="brand-logo" />
+          <span class="brand-name">LingoSwipe</span>
+        </a>
+        <div class="footer-links">
+          <a href="#features">Características</a>
+          <a href="#modes">Modos</a>
+          <a href="#premium">Premium</a>
+          <a href="#">Privacidad</a>
+          <a href="#">Términos</a>
+        </div>
+      </div>
+      <p class="footer-copy">© <span id="year"></span> LingoSwipe. Aprende idiomas con tarjetas inteligentes.</p>
+    </div>
+  </footer>
+
+  <script>
+    // Year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Reveal on scroll
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        if (e.isIntersecting) {
+          e.target.classList.add('in');
+          io.unobserve(e.target);
+        }
+      }
+    }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+    /* ============================================================
+       SWIPE DEMO — multi-idioma, avance tipo mazo real
+       ============================================================ */
+    (() => {
+      // "Hola" en cada idioma abre el mazo; luego vocabulario variado.
+      const words = [
+        { lang: 'Alemán',  flag: 'de', word: 'Hallo',     ipa: '/ˈhalo/',       hint: 'Hola',        dir: 'left'  },
+        { lang: 'Inglés',  flag: 'gb', word: 'Hello',     ipa: '/həˈloʊ/',      hint: 'Hola',        dir: 'left'  },
+        { lang: 'Francés', flag: 'fr', word: 'Bonjour',   ipa: '/bɔ̃.ʒuʁ/',     hint: 'Hola',        dir: 'left'  },
+        { lang: 'Búlgaro', flag: 'bg', word: 'Здравей',   ipa: '/ˈzdravej/',    hint: 'Hola',        dir: 'up'    },
+        { lang: 'Alemán',  flag: 'de', word: 'Danke',     ipa: '/ˈdaŋ.kə/',     hint: 'Gracias',     dir: 'left'  },
+        { lang: 'Inglés',  flag: 'gb', word: 'Thank you', ipa: '/θæŋk juː/',    hint: 'Gracias',     dir: 'right' },
+        { lang: 'Francés', flag: 'fr', word: 'Merci',     ipa: '/mɛʁ.si/',      hint: 'Gracias',     dir: 'left'  },
+        { lang: 'Búlgaro', flag: 'bg', word: 'Благодаря', ipa: '/blaɡoˈdarʲa/', hint: 'Gracias',     dir: 'up'    },
+        { lang: 'Alemán',  flag: 'de', word: 'Tschüss',   ipa: '/tʃʏs/',        hint: 'Adiós',       dir: 'right' },
+        { lang: 'Francés', flag: 'fr', word: 'Au revoir', ipa: '/o ʁə.vwaʁ/',   hint: 'Adiós',       dir: 'left'  },
+        { lang: 'Inglés',  flag: 'gb', word: 'Goodbye',   ipa: '/ɡʊdˈbaɪ/',     hint: 'Adiós',       dir: 'left'  },
+      ];
+
+      const cardTop   = document.getElementById('cardTop');
+      const cardLang  = document.getElementById('cardLang');
+      const cardWord  = document.getElementById('cardWord');
+      const cardIpa   = document.getElementById('cardIpa');
+      const cardHint  = document.getElementById('cardHint');
+      const cardB1    = document.getElementById('cardBehind1');
+      const cardB2    = document.getElementById('cardBehind2');
+      const tintSave  = document.getElementById('tintSave');
+      const tintSkip  = document.getElementById('tintSkip');
+      const stampSave = document.getElementById('stampSave');
+      const stampSkip = document.getElementById('stampSkip');
+      const edgeLeft  = document.getElementById('edgeLeft');
+      const edgeRight = document.getElementById('edgeRight');
+      const upMarker  = document.getElementById('upMarker');
+      const hintText  = document.getElementById('hintText');
+      const hintDot   = document.getElementById('hintDot');
+      const keys      = Array.from(document.querySelectorAll('#swipeKeys .swipe-key'));
+
+      // Tiny SVG flags (2:3 ratio, viewBox 3x2) — no external assets.
+      const FLAGS = {
+        de: '<svg viewBox="0 0 3 2" preserveAspectRatio="xMidYMid slice"><rect width="3" height="2" fill="#000"/><rect y="0.667" width="3" height="0.667" fill="#D00"/><rect y="1.333" width="3" height="0.667" fill="#FFCE00"/></svg>',
+        gb: '<svg viewBox="0 0 60 30" preserveAspectRatio="xMidYMid slice"><clipPath id="fgb"><rect width="60" height="30"/></clipPath><g clip-path="url(#fgb)"><rect width="60" height="30" fill="#012169"/><path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0 L60,30 M60,0 L0,30" stroke="#C8102E" stroke-width="4" clip-path="polygon(0 0,30 15,60 0)"/><path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/><path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6"/></g></svg>',
+        fr: '<svg viewBox="0 0 3 2" preserveAspectRatio="xMidYMid slice"><rect width="1" height="2" fill="#0055A4"/><rect x="1" width="1" height="2" fill="#fff"/><rect x="2" width="1" height="2" fill="#EF4135"/></svg>',
+        bg: '<svg viewBox="0 0 5 3" preserveAspectRatio="xMidYMid slice"><rect width="5" height="1" fill="#fff"/><rect y="1" width="5" height="1" fill="#00966E"/><rect y="2" width="5" height="1" fill="#D62612"/></svg>',
+      };
+      function flagSvg(code){ return FLAGS[code] || ''; }
+
+      let idx = 0;
+      let busy = false;
+      let autoplayTimer = null;
+
+      function setCard(el, w) {
+        // behind cards have no text — only a .card-deco span.
+        // keep dataset only, so we can promote later.
+        el.dataset.lang = w.lang;
+        el.dataset.word = w.word;
+        el.dataset.ipa  = w.ipa;
+        el.dataset.hint = w.hint;
+        el.dataset.flag = w.flag;
+      }
+
+      function setTopCard(w) {
+        const flagEl = document.getElementById('cardFlag');
+        if (flagEl) flagEl.innerHTML = flagSvg(w.flag);
+        cardLang.textContent = w.lang;
+        cardWord.textContent = w.word;
+        cardWord.style.fontSize = w.word.length > 10 ? '22px' : (w.word.length > 7 ? '28px' : '36px');
+        cardIpa.textContent = w.ipa;
+        cardHint.textContent = w.hint;
+      }
+
+      function setKeyActive(dir) {
+        keys.forEach(k => k.classList.toggle('active', k.dataset.dir === dir));
+      }
+
+      function setHint(dir) {
+        const map = {
+          left:  { text: '← Dominada · al final del mazo', color: '#4ADE80' },
+          right: { text: 'Fallo · vuelve pronto →',          color: '#F87171' },
+          up:    { text: '↑ Difícil · repaso prioritario',color: '#FDE047' },
+        };
+        const m = map[dir];
+        hintText.textContent = m.text;
+        hintDot.style.background = m.color;
+        hintDot.style.boxShadow  = `0 0 10px ${m.color}`;
+      }
+
+      function doSwipe(dir) {
+        if (busy) return;
+        busy = true;
+        clearInterval(autoplayTimer);
+
+        const w = words[idx];
+        const useDir = dir || w.dir;
+
+        setKeyActive(useDir);
+        setHint(useDir);
+
+        // Step 1 — tilt + glow (fast lead-in)
+        setTimeout(() => {
+          if (useDir === 'right') {
+            cardTop.style.transition = 'transform 220ms var(--ease)';
+            cardTop.style.transform  = 'translateX(40px) rotate(9deg)';
+            edgeRight.classList.add('visible');
+            tintSkip.classList.add('visible');
+          } else if (useDir === 'left') {
+            cardTop.style.transition = 'transform 220ms var(--ease)';
+            cardTop.style.transform  = 'translateX(-40px) rotate(-9deg)';
+            edgeLeft.classList.add('visible');
+            tintSave.classList.add('visible');
+          } else {
+            cardTop.style.transition = 'transform 220ms var(--ease)';
+            cardTop.style.transform  = 'translateY(-14px) scale(1.02)';
+            upMarker.style.opacity = '1';
+          }
+        }, 60);
+
+        // Step 2 — stamp
+        setTimeout(() => {
+          if (useDir === 'right') stampSkip.classList.add('visible');
+          else if (useDir === 'left') stampSave.classList.add('visible');
+        }, 280);
+
+        // Step 3 — fly off + promote behind cards
+        setTimeout(() => {
+          cardTop.style.transition = 'none';
+          const anim = useDir === 'right' ? 'flyRight' : useDir === 'left' ? 'flyLeft' : 'flyUp';
+          cardTop.style.animation = `${anim} 340ms cubic-bezier(.55,.05,.68,.2) forwards`;
+
+          // Behind cards smoothly "step forward" one slot as the top flies away.
+          cardB1.style.transition = 'transform 340ms var(--ease), opacity 340ms var(--ease)';
+          cardB1.style.transform  = 'translateY(0) scale(1)';
+          cardB1.style.opacity    = '1';
+          cardB2.style.transition = 'transform 340ms var(--ease), opacity 340ms var(--ease)';
+          cardB2.style.transform  = 'translateY(12px) scale(0.95)';
+          cardB2.style.opacity    = '0.7';
+        }, 520);
+
+        // Step 4 — swap, promote behind cards, reset top
+        setTimeout(() => {
+          idx = (idx + 1) % words.length;
+          const nextIdx = (idx + 1) % words.length;
+          const afterIdx = (idx + 2) % words.length;
+
+          // reset top
+          cardTop.style.animation   = 'none';
+          cardTop.style.transition = 'none';
+          cardTop.style.transform   = 'scale(0.92)';
+          cardTop.style.opacity     = '0';
+          stampSave.classList.remove('visible');
+          stampSkip.classList.remove('visible');
+          tintSave.classList.remove('visible');
+          tintSkip.classList.remove('visible');
+          edgeLeft.classList.remove('visible');
+          edgeRight.classList.remove('visible');
+          upMarker.style.opacity = '0';
+
+          // reset behind-card transforms so the stack is stable again
+          cardB1.style.transition = 'none';
+          cardB1.style.transform  = '';
+          cardB1.style.opacity    = '';
+          cardB2.style.transition = 'none';
+          cardB2.style.transform  = '';
+          cardB2.style.opacity    = '';
+
+          setTopCard(words[idx]);
+          setCard(cardB1, words[nextIdx]);
+          setCard(cardB2, words[afterIdx]);
+
+          // fade in top
+          requestAnimationFrame(() => requestAnimationFrame(() => {
+            cardTop.style.transition = 'transform 320ms var(--ease-spring), opacity 220ms ease';
+            cardTop.style.transform  = 'scale(1)';
+            cardTop.style.opacity    = '1';
+          }));
+
+          // Reset key highlight after short pause
+          setTimeout(() => {
+            setKeyActive('');
+            hintText.textContent = 'Mira el swipe en acción';
+            hintDot.style.background = '#8B5CF6';
+            hintDot.style.boxShadow  = '0 0 8px #8B5CF6';
+            busy = false;
+            scheduleAutoplay();
+          }, 320);
+        }, 880);
+      }
+
+      function scheduleAutoplay() {
+        clearInterval(autoplayTimer);
+        autoplayTimer = setInterval(() => doSwipe(null), 2800);
+      }
+
+      // Only run when stage is reasonably in view, to save cycles
+      const stage = document.getElementById('swipeStage');
+      let started = false;
+      const stageIo = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            if (!started) {
+              started = true;
+              setTopCard(words[0]);
+              setCard(cardB1, words[1]);
+              setCard(cardB2, words[2]);
+              setTimeout(() => doSwipe(null), 700);
+            } else {
+              scheduleAutoplay();
+            }
+          } else {
+            clearInterval(autoplayTimer);
+          }
+        });
+      }, { threshold: 0.2 });
+      stageIo.observe(stage);
+
+      // Manual buttons
+      document.getElementById('btnSwipeLeft').addEventListener('click',  () => doSwipe('left'));
+      document.getElementById('btnSwipeUp').addEventListener('click',    () => doSwipe('up'));
+      document.getElementById('btnSwipeRight').addEventListener('click', () => doSwipe('right'));
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,1025 @@
+<!doctype html>
+<html lang="es" class="scroll-smooth">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LingoSwipe — Aventura diaria para aprender idiomas</title>
+  <meta name="description" content="LingoSwipe convierte el aprendizaje diario en una aventura visual y gamificada: mundos temáticos, frases reales, retos y progreso tangible. iPhone, Widget y Apple Watch." />
+
+  <!-- Tailwind (CDN) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          boxShadow: {
+            soft: "0 20px 60px rgba(0,0,0,.18)",
+          },
+          keyframes: {
+            floaty: { "0%,100%": { transform: "translateY(0)" }, "50%": { transform: "translateY(-10px)" } },
+            shine: { "0%": { transform: "translateX(-120%)" }, "100%": { transform: "translateX(120%)" } },
+            swipeHint: {
+              "0%": { transform: "translateX(0) rotate(-2deg)" },
+              "35%": { transform: "translateX(-16px) rotate(-5deg)" },
+              "70%": { transform: "translateX(16px) rotate(4deg)" },
+              "100%": { transform: "translateX(0) rotate(-2deg)" },
+            },
+          },
+          animation: {
+            floaty: "floaty 6s ease-in-out infinite",
+            shine: "shine 2.8s ease-in-out infinite",
+            swipeHint: "swipeHint 2.6s ease-in-out infinite",
+          },
+        },
+      },
+    };
+  </script>
+
+  <!-- Lucide (CDN) -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap" rel="stylesheet" />
+
+  <style>
+    /* Stable on-scroll reveal (no Animate.css transforms) */
+    .reveal { opacity: 0; transform: translateY(14px); transition: opacity .7s ease, transform .7s ease; }
+    .reveal.is-visible { opacity: 1; transform: translateY(0); }
+
+    /* App-like surfaces (closer to iOS cards) */
+    :root{
+      --ls-bg: #0D1117;
+      --ls-card: #161B22;
+      --ls-card2: #1A1F2A;
+      --ls-border: rgba(255,255,255,.10);
+      --ls-border2: rgba(255,255,255,.14);
+    }
+    .glass {
+      background: linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.05));
+      border: 1px solid rgba(255,255,255,.12);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+    .font-brand {
+      font-family: "Nunito", ui-sans-serif, system-ui, -apple-system, sans-serif;
+    }
+    /* Pantallas estilo app: fondo real del mapa de aventura del proyecto */
+    .ls-app-screen {
+      background-color: #0f1117;
+      background-image:
+        linear-gradient(to bottom, rgba(15, 17, 23, 0.9), rgba(15, 17, 23, 0.72), rgba(15, 17, 23, 0.92)),
+        url("assets/adventure_map_bg_dark.jpg");
+      background-size: cover;
+      background-position: center;
+    }
+    .ls-map-preview {
+      background-color: #e8ecf1;
+      background-image: url("assets/adventure_map_bg_light.jpg");
+      background-size: cover;
+      background-position: center;
+    }
+    .dark .ls-map-preview {
+      background-color: #0f1117;
+      background-image:
+        linear-gradient(to bottom, rgba(15, 17, 23, 0.55), rgba(15, 17, 23, 0.82)),
+        url("assets/adventure_map_bg_dark.jpg");
+    }
+  </style>
+</head>
+
+<body class="bg-white text-slate-900 antialiased selection:bg-slate-900 selection:text-white dark:bg-[#0f1117] dark:text-slate-100">
+  <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+    <div class="absolute -top-40 left-1/2 h-[520px] w-[520px] -translate-x-1/2 rounded-full blur-3xl opacity-30 dark:opacity-35"
+         style="background: radial-gradient(circle at 30% 30%, rgba(99,102,241,.55), rgba(14,165,233,.35), rgba(16,185,129,.18), transparent 65%);"></div>
+    <div class="absolute -bottom-56 right-[-120px] h-[560px] w-[560px] rounded-full blur-3xl opacity-25 dark:opacity-30"
+         style="background: radial-gradient(circle at 30% 30%, rgba(244,63,94,.35), rgba(34,197,94,.22), rgba(14,165,233,.18), transparent 65%);"></div>
+  </div>
+
+  <!-- NAV -->
+  <header class="sticky top-0 z-50 border-b border-slate-200/60 bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:border-white/10 dark:bg-[#0f1117]/70">
+    <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
+      <a href="#top" class="inline-flex items-center gap-2.5">
+        <img src="assets/app-icon.png" width="36" height="36" alt=""
+             class="h-9 w-9 rounded-2xl object-cover shadow-sm ring-1 ring-black/5 dark:ring-white/10" />
+        <span class="font-brand text-[17px] font-extrabold tracking-tight text-slate-900 dark:text-white">
+          LingoSwipe
+          <span class="ml-2 align-middle inline-flex rounded-full border border-slate-200 bg-white px-2 py-0.5 text-[11px] font-semibold text-slate-600 dark:border-white/10 dark:bg-white/5 dark:text-slate-300">Beta</span>
+        </span>
+      </a>
+
+      <nav class="hidden items-center gap-5 text-sm text-slate-600 dark:text-slate-300 lg:flex">
+        <a class="hover:text-slate-900 dark:hover:text-white" href="#demo">Demo</a>
+        <a class="hover:text-slate-900 dark:hover:text-white" href="#how">Cómo funciona</a>
+        <a class="hover:text-slate-900 dark:hover:text-white" href="#content">Contenido</a>
+        <a class="hover:text-slate-900 dark:hover:text-white" href="#modes">Modos</a>
+        <a class="hover:text-slate-900 dark:hover:text-white" href="#motivation">Motivación</a>
+        <a class="hover:text-slate-900 dark:hover:text-white" href="#apple">Apple</a>
+        <a class="hover:text-slate-900 dark:hover:text-white" href="#social">Comunidad</a>
+        <a class="hover:text-slate-900 dark:hover:text-white" href="#pricing">Gratis vs Pro</a>
+      </nav>
+
+      <div class="flex items-center gap-2">
+        <button id="themeToggle" type="button"
+                class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:bg-slate-50 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:bg-white/10"
+                aria-label="Cambiar tema">
+          <i data-lucide="moon" class="h-4 w-4"></i>
+          <span class="hidden sm:inline">Tema</span>
+        </button>
+        <a href="#waitlist"
+           class="inline-flex items-center justify-center rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200">
+          Early Access
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main id="top">
+    <!-- HERO -->
+    <section class="relative">
+      <div class="mx-auto grid max-w-6xl gap-10 px-4 py-16 sm:px-6 sm:py-20 lg:grid-cols-12 lg:items-center">
+        <div class="reveal lg:col-span-6">
+          <div class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/70 px-3 py-1 text-xs font-medium text-slate-700 shadow-sm dark:border-white/10 dark:bg-white/5 dark:text-slate-200">
+            <span class="relative inline-flex h-2 w-2">
+              <span class="absolute inline-flex h-2 w-2 animate-pulse rounded-full bg-emerald-400 opacity-60"></span>
+              <span class="relative inline-flex h-2 w-2 rounded-full bg-emerald-400"></span>
+            </span>
+            Aprendizaje gamificado, visual y diario — con progreso tangible
+          </div>
+
+          <h1 class="mt-5 text-4xl font-semibold tracking-tight text-slate-900 dark:text-white sm:text-5xl">
+            Aprende un idioma como una
+            <span class="relative inline-block">
+              aventura
+              <span class="absolute inset-x-0 -bottom-1 h-2 rounded-full bg-gradient-to-r from-indigo-400/70 via-sky-400/70 to-emerald-400/70 blur-sm"></span>
+            </span>
+            que vuelves cada día.
+          </h1>
+
+          <p class="mt-5 max-w-xl text-base leading-relaxed text-slate-600 dark:text-slate-300 sm:text-lg">
+            <span class="font-semibold text-slate-900 dark:text-white">LingoSwipe</span> organiza el estudio en
+            <span class="font-semibold">mundos temáticos</span>, <span class="font-semibold">frases reales</span> y
+            <span class="font-semibold">retos interactivos</span> para practicar comprensión, reforzar memoria a largo plazo y sentir avance desde el primer día.
+          </p>
+
+          <div class="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center">
+            <a href="#waitlist"
+               class="inline-flex items-center justify-center gap-2 rounded-xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white shadow-soft transition hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200">
+              <i data-lucide="download" class="h-4 w-4"></i>
+              Probar gratis / Early Access
+            </a>
+            <a href="#demo"
+               class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-800 shadow-sm transition hover:bg-slate-50 dark:border-white/10 dark:bg-white/5 dark:text-slate-100 dark:hover:bg-white/10">
+              <i data-lucide="layout-grid" class="h-4 w-4"></i>
+              Ver demo visual
+            </a>
+          </div>
+
+          <div class="mt-8 flex flex-wrap items-center gap-4 text-xs text-slate-500 dark:text-slate-400">
+            <span class="inline-flex items-center gap-2"><i data-lucide="languages" class="h-4 w-4"></i> Alemán desde español (listo para más)</span>
+            <span class="inline-flex items-center gap-2"><i data-lucide="route" class="h-4 w-4"></i> Mundos + rutas visuales</span>
+            <span class="inline-flex items-center gap-2"><i data-lucide="watch" class="h-4 w-4"></i> iPhone + Widget + Watch</span>
+          </div>
+        </div>
+
+        <!-- iPhone mockup -->
+        <div class="reveal lg:col-span-6">
+          <div class="relative mx-auto max-w-md">
+            <div class="absolute -inset-8 -z-10 rounded-[3rem] blur-3xl opacity-40 dark:opacity-50"
+                 style="background: radial-gradient(circle at 20% 20%, rgba(99,102,241,.55), rgba(14,165,233,.25), rgba(34,197,94,.20), transparent 70%);"></div>
+
+            <div class="relative rounded-[2.25rem] bg-slate-900 p-[10px] shadow-soft ring-1 ring-black/10 dark:ring-white/10">
+              <div class="relative overflow-hidden rounded-[1.85rem] ls-app-screen">
+                <div class="absolute left-1/2 top-3 z-20 h-6 w-32 -translate-x-1/2 rounded-full bg-black/55 shadow-[0_0_0_1px_rgba(255,255,255,.08)]"></div>
+
+                <div class="flex items-center justify-between px-5 pb-3 pt-5 text-[11px] text-white/75">
+                  <span class="inline-flex items-center gap-2">
+                    <span class="inline-flex h-2 w-2 rounded-full bg-emerald-400"></span>
+                    Meta semanal: 4/5
+                  </span>
+                  <span class="inline-flex items-center gap-2">
+                    <i data-lucide="signal" class="h-3.5 w-3.5"></i>
+                    <i data-lucide="battery" class="h-3.5 w-3.5"></i>
+                  </span>
+                </div>
+
+                <div class="px-5 pb-6">
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <p class="text-xs font-medium text-white/60">Inicio</p>
+                      <p class="mt-0.5 text-lg font-semibold text-white">Tu ruta de hoy</p>
+                    </div>
+                    <div class="inline-flex items-center gap-2 rounded-xl bg-white/10 px-3 py-2 text-xs font-semibold text-white/80">
+                      <i data-lucide="flame" class="h-4 w-4 text-orange-300"></i>
+                      Racha 12
+                    </div>
+                  </div>
+
+                  <div class="relative mt-5">
+                    <div class="absolute -inset-6 -z-10 rounded-3xl blur-2xl opacity-60"
+                         style="background: radial-gradient(circle at 30% 10%, rgba(244,63,94,.28), rgba(34,197,94,.22), rgba(14,165,233,.18), transparent 70%);"></div>
+
+                    <div class="glass relative overflow-hidden rounded-3xl p-5 shadow-soft">
+                      <div class="pointer-events-none absolute -left-1/2 top-0 h-full w-1/2 rotate-12 bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-70 animate-shine"></div>
+
+                      <div class="flex items-center justify-between">
+                        <div class="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-[11px] font-semibold text-white/80">
+                          <i data-lucide="cards" class="h-3.5 w-3.5"></i>
+                          Swipe cards
+                        </div>
+                        <div class="inline-flex items-center gap-2 text-[11px] font-medium text-white/70">
+                          <span class="inline-flex items-center gap-1 rounded-full bg-white/10 px-2 py-1">
+                            <i data-lucide="heart" class="h-3.5 w-3.5 text-rose-200"></i> 3
+                          </span>
+                          <span class="inline-flex items-center gap-1 rounded-full bg-white/10 px-2 py-1">
+                            <i data-lucide="gem" class="h-3.5 w-3.5 text-sky-200"></i> 120
+                          </span>
+                        </div>
+                      </div>
+
+                      <div class="mt-4">
+                        <p class="text-sm font-medium text-white/60">Frase real</p>
+                        <p class="mt-1 text-3xl font-semibold tracking-tight text-white">“¿Cuánto cuesta?”</p>
+                        <div class="mt-4 rounded-2xl bg-white/10 p-4">
+                          <p class="text-sm text-white/80">
+                            <span class="font-semibold text-white">Wie viel kostet das?</span>
+                            <span class="ml-2 text-white/60">(situación cotidiana)</span>
+                          </p>
+                        </div>
+                      </div>
+
+                      <div class="mt-5 flex items-center justify-between text-xs text-white/65">
+                        <span class="inline-flex items-center gap-2">
+                          <span class="h-2 w-2 rounded-full bg-rose-400"></span>
+                          Izq: <span class="font-semibold text-white/85">No aprendido</span>
+                          <span class="text-white/50">(rojo)</span>
+                        </span>
+                        <span class="inline-flex items-center gap-2">
+                          <span class="h-2 w-2 rounded-full bg-emerald-400"></span>
+                          Der: <span class="font-semibold text-white/85">Aprendido</span>
+                          <span class="text-white/50">(verde)</span>
+                        </span>
+                      </div>
+                    </div>
+
+                    <div class="mt-4 grid grid-cols-3 gap-3">
+                      <div class="rounded-2xl bg-white/5 p-3 ring-1 ring-white/10">
+                        <p class="text-[11px] text-white/60">SRS</p>
+                        <p class="mt-1 text-sm font-semibold text-white/90">Repaso</p>
+                      </div>
+                      <div class="rounded-2xl bg-white/5 p-3 ring-1 ring-white/10">
+                        <p class="text-[11px] text-white/60">Artículos</p>
+                        <p class="mt-1 text-sm font-semibold text-white/90">Género</p>
+                      </div>
+                      <div class="rounded-2xl bg-white/5 p-3 ring-1 ring-white/10">
+                        <p class="text-[11px] text-white/60">Listening</p>
+                        <p class="mt-1 text-sm font-semibold text-white/90">Audio</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="mt-6 flex items-center justify-between rounded-2xl bg-white/5 px-4 py-3 ring-1 ring-white/10">
+                    <span class="inline-flex items-center gap-2 text-xs font-semibold text-white/80"><i data-lucide="map" class="h-4 w-4"></i> Mundos</span>
+                    <span class="inline-flex items-center gap-2 text-xs font-semibold text-white/80"><i data-lucide="target" class="h-4 w-4"></i> Metas</span>
+                    <span class="inline-flex items-center gap-2 text-xs font-semibold text-white/80"><i data-lucide="trophy" class="h-4 w-4"></i> Liga</span>
+                  </div>
+
+                  <p class="mt-4 text-center text-[11px] text-white/45">Fondo del mapa tomado del asset <span class="font-medium text-white/60">adventure_map_bg</span> del proyecto.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-5 flex flex-wrap items-center justify-center gap-2 text-xs">
+              <span class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1 text-slate-700 shadow-sm dark:border-white/10 dark:bg-white/5 dark:text-slate-200">
+                <i data-lucide="map" class="h-4 w-4"></i> Mapa de mundos
+              </span>
+              <span class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1 text-slate-700 shadow-sm dark:border-white/10 dark:bg-white/5 dark:text-slate-200">
+                <i data-lucide="layout-dashboard" class="h-4 w-4"></i> Widget
+              </span>
+              <span class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1 text-slate-700 shadow-sm dark:border-white/10 dark:bg-white/5 dark:text-slate-200">
+                <i data-lucide="watch" class="h-4 w-4"></i> Apple Watch
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DEMO -->
+    <section id="demo" class="border-t border-slate-200/60 py-16 dark:border-white/10 sm:py-20">
+      <div class="mx-auto max-w-6xl px-4 sm:px-6">
+        <div class="reveal">
+          <h2 class="text-2xl font-semibold tracking-tight text-slate-900 dark:text-white sm:text-3xl">Demo visual inmediata</h2>
+          <p class="mt-3 max-w-3xl text-slate-600 dark:text-slate-300">
+            Home, mapa de mundos, swipe, reto de artículos y Widget/Watch. El mapa usa texturas reales exportadas desde <span class="font-medium text-slate-800 dark:text-slate-200">Aprende aleman2 / LingoSwipe / Assets</span>.
+          </p>
+        </div>
+
+        <div class="mt-10 grid gap-6 lg:grid-cols-12">
+          <div class="reveal lg:col-span-4">
+            <div class="h-full rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-white/5">
+              <div class="flex items-center justify-between">
+                <p class="text-sm font-semibold">Home</p>
+                <span class="rounded-full bg-slate-100 px-2 py-1 text-[11px] font-semibold text-slate-700 dark:bg-white/10 dark:text-slate-200">Hoy</span>
+              </div>
+              <div class="mt-4 overflow-hidden rounded-3xl shadow-soft ring-1 ring-black/10">
+                <div class="ls-app-screen relative p-4 text-white">
+                  <div class="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/35 via-black/15 to-black/55"></div>
+                  <div class="relative">
+                    <p class="text-xs text-white/70">Continúa tu recorrido</p>
+                    <p class="mt-1 text-lg font-semibold">Mundo: Viajes</p>
+                    <div class="mt-4 grid gap-2">
+                      <div class="rounded-2xl bg-black/35 p-3 text-sm ring-1 ring-white/10 backdrop-blur-md">Lección 3 · Aeropuerto</div>
+                      <div class="rounded-2xl bg-black/35 p-3 text-sm ring-1 ring-white/10 backdrop-blur-md">Cofre disponible · +25 gemas</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="reveal lg:col-span-4">
+            <div class="h-full rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-white/5">
+              <div class="flex items-center justify-between">
+                <p class="text-sm font-semibold">Mapa de mundos</p>
+                <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-600 dark:text-slate-300"><i data-lucide="map-pin" class="h-4 w-4"></i> Temático</span>
+              </div>
+              <div class="mt-4 overflow-hidden rounded-3xl ring-1 ring-slate-200/80 dark:ring-white/10">
+                <div class="ls-map-preview relative p-4">
+                  <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-white/10 dark:from-black/40 dark:to-transparent"></div>
+                  <div class="relative grid grid-cols-3 gap-2">
+                    <div class="rounded-2xl bg-white/90 p-3 text-center text-xs font-semibold text-slate-800 shadow-sm ring-1 ring-slate-200/70 backdrop-blur dark:bg-[#0f1117]/80 dark:text-white dark:ring-white/15">Café</div>
+                    <div class="rounded-2xl bg-white/90 p-3 text-center text-xs font-semibold text-slate-800 shadow-sm ring-1 ring-slate-200/70 backdrop-blur dark:bg-[#0f1117]/80 dark:text-white dark:ring-white/15">Compras</div>
+                    <div class="rounded-2xl bg-white/90 p-3 text-center text-xs font-semibold text-slate-800 shadow-sm ring-1 ring-slate-200/70 backdrop-blur dark:bg-[#0f1117]/80 dark:text-white dark:ring-white/15">Trabajo</div>
+                    <div class="rounded-2xl bg-white/90 p-3 text-center text-xs font-semibold text-slate-800 shadow-sm ring-1 ring-slate-200/70 backdrop-blur dark:bg-[#0f1117]/80 dark:text-white dark:ring-white/15">Salud</div>
+                    <div class="rounded-2xl bg-white/90 p-3 text-center text-xs font-semibold text-slate-800 shadow-sm ring-1 ring-slate-200/70 backdrop-blur dark:bg-[#0f1117]/80 dark:text-white dark:ring-white/15">Viajes</div>
+                    <div class="rounded-2xl bg-white/90 p-3 text-center text-xs font-semibold text-slate-800 shadow-sm ring-1 ring-slate-200/70 backdrop-blur dark:bg-[#0f1117]/80 dark:text-white dark:ring-white/15">Social</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="reveal lg:col-span-4">
+            <div class="h-full rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-white/5">
+              <div class="flex items-center justify-between">
+                <p class="text-sm font-semibold">Widget / Watch</p>
+                <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-600 dark:text-slate-300"><i data-lucide="apple" class="h-4 w-4"></i> Rutina</span>
+              </div>
+              <div class="mt-4 grid gap-3 sm:grid-cols-2">
+                <div class="rounded-3xl bg-gradient-to-br from-slate-900 to-slate-800 p-4 text-white ring-1 ring-black/10">
+                  <p class="text-xs text-white/60">Widget</p>
+                  <p class="mt-2 text-sm font-semibold">1 micro-repaso</p>
+                  <div class="mt-3 rounded-2xl bg-white/10 p-3 text-[11px] text-white/80">“¿Dónde está…?”<br><span class="text-white/60">Wo ist…?</span></div>
+                </div>
+                <div class="rounded-3xl bg-slate-50 p-4 ring-1 ring-slate-200/60 dark:bg-white/5 dark:ring-white/10">
+                  <p class="text-xs font-semibold text-slate-700 dark:text-slate-200">Apple Watch</p>
+                  <div class="mt-3 grid place-items-center rounded-2xl bg-white p-3 shadow-sm dark:bg-[#0f1117]">
+                    <div class="grid h-20 w-20 place-items-center rounded-full bg-gradient-to-br from-indigo-500/90 to-sky-400/80 text-white shadow-soft">
+                      <i data-lucide="zap" class="h-8 w-8"></i>
+                    </div>
+                    <p class="mt-2 text-center text-[11px] text-slate-600 dark:text-slate-300">Challenge 30s</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SWIPE -->
+    <section id="swipe" class="relative isolate border-t border-slate-200/60 py-16 dark:border-white/10 sm:py-20">
+      <div class="mx-auto max-w-6xl px-4 sm:px-6">
+        <div class="reveal">
+          <h2 class="text-2xl font-semibold tracking-tight text-slate-900 dark:text-white sm:text-3xl">Swipe con intención (rojo / verde)</h2>
+          <p class="mt-3 max-w-3xl text-slate-600 dark:text-slate-300">
+            En la práctica principal: <span class="font-semibold text-slate-900 dark:text-white">izquierda = no aprendido (rojo)</span> y
+            <span class="font-semibold text-slate-900 dark:text-white">derecha = aprendido (verde)</span>. Gestos rápidos, feedback claro y sesiones cortas.
+          </p>
+        </div>
+
+        <div class="mt-10 grid gap-6 lg:grid-cols-12">
+          <div class="reveal lg:col-span-5">
+            <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-white/5">
+              <div class="flex items-start gap-4">
+                <span class="grid h-11 w-11 place-items-center rounded-2xl bg-slate-900 text-white dark:bg-white dark:text-slate-900">
+                  <i data-lucide="hand" class="h-5 w-5"></i>
+                </span>
+                <div>
+                  <p class="text-sm font-semibold">Cómo se entiende en 3 segundos</p>
+                  <p class="mt-1 text-sm text-slate-600 dark:text-slate-300">
+                    Misma semántica que en tarjetas de estudio: rojo a la izquierda si aún no lo dominas; verde a la derecha cuando ya lo llevas.
+                  </p>
+                </div>
+              </div>
+
+              <div class="mt-6 grid gap-3">
+                <div class="rounded-2xl bg-slate-50 p-4 dark:bg-white/5">
+                  <p class="text-xs font-semibold text-slate-700 dark:text-slate-200">Swipe a la izquierda</p>
+                  <div class="mt-2 flex items-center gap-3">
+                    <span class="h-9 w-9 rounded-xl bg-gradient-to-br from-rose-500/90 to-orange-400/70"></span>
+                    <p class="text-sm text-slate-600 dark:text-slate-300"><span class="font-semibold text-slate-900 dark:text-white">Rojo</span> — no aprendido (sigue en repaso).</p>
+                  </div>
+                </div>
+                <div class="rounded-2xl bg-slate-50 p-4 dark:bg-white/5">
+                  <p class="text-xs font-semibold text-slate-700 dark:text-slate-200">Swipe a la derecha</p>
+                  <div class="mt-2 flex items-center gap-3">
+                    <span class="h-9 w-9 rounded-xl bg-gradient-to-br from-emerald-400/90 to-sky-400/70"></span>
+                    <p class="text-sm text-slate-600 dark:text-slate-300"><span class="font-semibold text-slate-900 dark:text-white">Verde</span> — aprendido (avanzas).</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-6 flex flex-wrap gap-2 text-xs text-slate-500 dark:text-slate-400">
+                <span class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1 dark:border-white/10 dark:bg-white/5"><i data-lucide="brain" class="h-4 w-4"></i> SRS</span>
+                <span class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1 dark:border-white/10 dark:bg-white/5"><i data-lucide="shuffle" class="h-4 w-4"></i> Mixtos</span>
+                <span class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1 dark:border-white/10 dark:bg-white/5"><i data-lucide="shield" class="h-4 w-4"></i> Supervivencia</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="reveal lg:col-span-7">
+            <div class="relative overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm dark:border-white/10 dark:bg-white/5">
+              <div class="absolute inset-0 opacity-90 dark:opacity-100"
+                   style="background:
+                     radial-gradient(circle at 20% 30%, rgba(244,63,94,.22), transparent 50%),
+                     radial-gradient(circle at 80% 30%, rgba(34,197,94,.18), transparent 55%),
+                     radial-gradient(circle at 50% 80%, rgba(14,165,233,.12), transparent 55%);"></div>
+
+              <div class="relative p-6 sm:p-8">
+                <div class="relative mx-auto max-w-md">
+                  <div class="absolute -inset-4 -z-10 rounded-3xl blur-2xl"
+                       style="background: radial-gradient(circle at 30% 20%, rgba(244,63,94,.20), rgba(34,197,94,.16), transparent 70%);"></div>
+
+                  <div class="relative overflow-hidden rounded-3xl bg-slate-900 p-5 shadow-soft ring-1 ring-black/10">
+                    <div class="absolute inset-y-0 left-0 w-2 bg-gradient-to-b from-rose-400/90 via-orange-300/70 to-transparent"></div>
+                    <div class="absolute inset-y-0 right-0 w-2 bg-gradient-to-b from-emerald-400/90 via-sky-300/70 to-transparent"></div>
+
+                    <div class="flex items-center justify-between">
+                      <span class="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-[11px] font-semibold text-white/80">
+                        <i data-lucide="book-open" class="h-3.5 w-3.5"></i> Artículos / género
+                      </span>
+                      <span class="inline-flex items-center gap-1 text-[11px] text-white/60">
+                        <span class="inline-flex h-2 w-2 animate-pulse rounded-full bg-emerald-400"></span>
+                        00:18
+                      </span>
+                    </div>
+
+                    <div class="mt-4">
+                      <p class="text-xs font-medium text-white/60">Elige el artículo correcto</p>
+                      <p class="mt-1 text-2xl font-semibold text-white">— Auto</p>
+                      <div class="mt-4 grid grid-cols-3 gap-2">
+                        <div class="rounded-2xl bg-white/10 p-3 text-center text-sm font-semibold text-white/80">der</div>
+                        <div class="rounded-2xl bg-white/10 p-3 text-center text-sm font-semibold text-white/80">die</div>
+                        <div class="rounded-2xl bg-white/10 p-3 text-center text-sm font-semibold text-white/80">das</div>
+                      </div>
+                    </div>
+
+                    <div class="mt-5 flex items-center justify-between text-xs text-white/60">
+                      <span class="inline-flex items-center gap-2"><i data-lucide="arrow-left" class="h-4 w-4"></i> Rojo · no aprendido</span>
+                      <span class="inline-flex items-center gap-2">Verde · aprendido <i data-lucide="arrow-right" class="h-4 w-4"></i></span>
+                    </div>
+
+                    <div class="pointer-events-none absolute left-1/2 top-1/2 w-[92%] -translate-x-1/2 -translate-y-1/2 animate-swipeHint">
+                      <div class="flex items-center justify-between rounded-2xl bg-white/5 px-4 py-3 ring-1 ring-white/10">
+                        <span class="inline-flex items-center gap-2 text-xs font-semibold text-white/80"><span class="h-2 w-2 rounded-full bg-rose-400"></span> Izq · no aprendido</span>
+                        <span class="inline-flex items-center gap-2 text-xs font-semibold text-white/80"><span class="h-2 w-2 rounded-full bg-emerald-400"></span> Der · aprendido</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mt-8 rounded-2xl bg-white/70 p-4 text-sm text-slate-700 shadow-sm ring-1 ring-slate-200/60 backdrop-blur dark:bg-white/5 dark:text-slate-200 dark:ring-white/10">
+                  <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div class="inline-flex items-start gap-3">
+                      <img src="assets/app-icon.png" width="36" height="36" alt=""
+                           class="mt-0.5 h-9 w-9 rounded-2xl object-cover ring-1 ring-slate-200/70 dark:ring-white/10" />
+                      <p><span class="font-semibold text-slate-900 dark:text-white">Conversión:</span> aquí pega un vídeo corto del swipe real (rojo izquierda / verde derecha).</p>
+                    </div>
+                    <a href="#waitlist" class="inline-flex items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-2 text-xs font-semibold text-white transition hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200">
+                      <i data-lucide="arrow-right" class="h-4 w-4"></i>
+                      Quiero probarlo
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HOW -->
+    <section id="how" class="border-t border-slate-200/60 py-16 dark:border-white/10 sm:py-20">
+      <div class="mx-auto max-w-6xl px-4 sm:px-6">
+        <div class="reveal">
+          <h2 class="text-2xl font-semibold tracking-tight text-slate-900 dark:text-white sm:text-3xl">Cómo funciona (3 pasos)</h2>
+          <p class="mt-3 max-w-3xl text-slate-600 dark:text-slate-300">Elige idioma y meta, practica en modos dinámicos, avanza con rachas y recompensas.</p>
+        </div>
+
+        <div class="mt-10 grid gap-6 md:grid-cols-3">
+          <div class="reveal rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-white/5">
+            <div class="flex items-center justify-between">
+              <span class="grid h-10 w-10 place-items-center rounded-2xl bg-slate-900 text-white dark:bg-white dark:text-slate-900"><i data-lucide="sliders-horizontal" class="h-5 w-5"></i></span>
+              <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">1</span>
+            </div>
+            <h3 class="mt-4 text-base font-semibold">Eliges idioma y meta</h3>
+            <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">Nativo, objetivo, nivel, tiempo diario, metas e incluso varios idiomas activos.</p>
+          </div>
+
+          <div class="reveal rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-white/5">
+            <div class="flex items-center justify-between">
+              <span class="grid h-10 w-10 place-items-center rounded-2xl bg-gradient-to-br from-indigo-500/90 to-sky-400/80 text-white"><i data-lucide="gamepad-2" class="h-5 w-5"></i></span>
+              <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">2</span>
+            </div>
+            <h3 class="mt-4 text-base font-semibold">Practicas en modos dinámicos</h3>
+            <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">Swipe, SRS, artículos, listening, supervivencia, mixtos y revisión inteligente.</p>
+          </div>
+
+          <div class="reveal rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-white/5">
+            <div class="flex items-center justify-between">
+              <span class="grid h-10 w-10 place-items-center rounded-2xl bg-gradient-to-br from-rose-500/90 to-orange-400/80 text-white"><i data-lucide="trending-up" class="h-5 w-5"></i></span>
+              <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">3</span>
+            </div>
+            <h3 class="mt-4 text-base font-semibold">Avanzas con rachas y recompensas</h3>
+            <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">Metas semanales, cofres, logros y ligas para mantener motivación sin perder foco.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTENT -->
+    <section id="content" class="border-t border-slate-200/60 py-16 dark:border-white/10 sm:py-20">
+      <div class="mx-auto max-w-6xl px-4 sm:px-6">
+        <div class="reveal">
+          <h2 class="text-2xl font-semibold tracking-tight text-slate-900 dark:text-white sm:text-3xl">Mundos temáticos y situaciones reales</h2>
+          <p class="mt-3 max-w-3xl text-slate-600 dark:text-slate-300">Dos grandes bloques: vocabulario útil y frases listas para usar cuando importa.</p>
+        </div>
+
+        <div class="mt-10 grid gap-6 lg:grid-cols-12">
+          <div class="reveal lg:col-span-7 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-white/5">
+            <div class="flex items-start gap-4">
+              <span class="grid h-12 w-12 place-items-center rounded-2xl bg-slate-900 text-white dark:bg-white dark:text-slate-900"><i data-lucide="map" class="h-5 w-5"></i></span>
+              <div>
+                <h3 class="text-base font-semibold">Aprender en contexto</h3>
+                <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">Cada mundo agrupa situaciones cotidianas para que el progreso se sienta aplicable, no abstracto.</p>
+              </div>
+            </div>
+            <div class="mt-6 grid gap-3 sm:grid-cols-2">
+              <div class="rounded-2xl bg-slate-50 p-4 dark:bg-white/5">
+                <p class="text-xs font-semibold text-slate-700 dark:text-slate-200">Vocabulario</p>
+                <p class="mt-1 text-sm text-slate-600 dark:text-slate-300">Palabras de alto valor para salir a la calle con confianza.</p>
+              </div>
+              <div class="rounded-2xl bg-slate-50 p-4 dark:bg-white/5">
+                <p class="text-xs font-semibold text-slate-700 dark:text-slate-200">Frases</p>
+                <p class="mt-1 text-sm text-slate-600 dark:text-slate-300">Micro-diálogos naturales para situaciones reales.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="reveal lg:col-span-5 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-white/5">
+            <h3 class="text-base font-semibold">Ejemplo rápido</h3>
+            <div class="mt-4 rounded-3xl bg-gradient-to-b from-slate-900 to-slate-800 p-5 text-white shadow-soft ring-1 ring-black/10">
+              <p class="text-xs text-white/60">En la panadería</p>
+              <p class="mt-2 text-lg font-semibold">“Para llevar”</p>
+              <div class="mt-4 rounded-2xl bg-white/10 p-4 text-sm text-white/85">
+                <span class="font-semibold text-white">Zum Mitnehmen, bitte.</span>
+                <span class="ml-2 text-white/60">+ repaso de artículo</span>
+              </div>
+              <div class="mt-4 flex flex-wrap gap-2 text-[11px] text-white/70">
+                <span class="rounded-full bg-white/10 px-3 py-1">Listening</span>
+                <span class="rounded-full bg-white/10 px-3 py-1">Swipe</span>
+                <span class="rounded-full bg-white/10 px-3 py-1">SRS</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MODES -->
+    <section id="modes" class="border-t border-slate-200/60 py-16 dark:border-white/10 sm:py-20">
+      <div class="mx-auto max-w-6xl px-4 sm:px-6">
+        <div class="reveal">
+          <h2 class="text-2xl font-semibold tracking-tight text-slate-900 dark:text-white sm:text-3xl">Modos de juego y práctica</h2>
+          <p class="mt-3 max-w-3xl text-slate-600 dark:text-slate-300">Variedad con propósito: sesiones cortas, alta intensidad útil.</p>
+        </div>
+
+        <div class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div class="reveal rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-white/5">
+            <div class="flex items-center gap-3">
+              <span class="grid h-10 w-10 place-items-center rounded-2xl bg-slate-900 text-white dark:bg-white dark:text-slate-900"><i data-lucide="cards" class="h-5 w-5"></i></span>
+              <p class="text-sm font-semibold">Tarjetas swipe</p>
+            </div>
+            <p class="mt-3 text-sm text-slate-600 dark:text-slate-300">Práctica rápida con gestos y feedback inmediato.</p>
+          </div>
+          <div class="reveal rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-white/5">
+            <div class="flex items-center gap-3">
+              <span class="grid h-10 w-10 place-items-center rounded-2xl bg-gradient-to-br from-emerald-500/90 to-sky-400/75 text-white"><i data-lucide="brain" class="h-5 w-5"></i></span>
+              <p class="text-sm font-semibold">Repaso SRS</p>
+            </div>
+            <p class="mt-3 text-sm text-slate-600 dark:text-slate-300">Refuerzo espaciado para memoria a largo plazo.</p>
+          </div>
+          <div class="reveal rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-white/5">
+            <div class="flex items-center gap-3">
+              <span class="grid h-10 w-10 place-items-center rounded-2xl bg-gradient-to-br from-rose-500/90 to-orange-400/75 text-white"><i data-lucide="shield" class="h-5 w-5"></i></span>
+              <p class="text-sm font-semibold">Modo supervivencia</p>
+            </div>
+            <p class="mt-3 text-sm text-slate-600 dark:text-slate-300">Presión amable para pensar rápido sin romper el ritmo.</p>
+          </div>
+          <div class="reveal rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-white/5">
+            <div class="flex items-center gap-3">
+              <span class="grid h-10 w-10 place-items-center rounded-2xl bg-slate-900 text-white dark:bg-white dark:text-slate-900"><i data-lucide="book-open" class="h-5 w-5"></i></span>
+              <p class="text-sm font-semibold">Artículos / género</p>
+            </div>
+            <p class="mt-3 text-sm text-slate-600 dark:text-slate-300">Donde muchas personas se atascan: lo conviertes en juego.</p>
+          </div>
+          <div class="reveal rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-white/5">
+            <div class="flex items-center gap-3">
+              <span class="grid h-10 w-10 place-items-center rounded-2xl bg-gradient-to-br from-indigo-500/90 to-sky-400/75 text-white"><i data-lucide="headphones" class="h-5 w-5"></i></span>
+              <p class="text-sm font-semibold">Listening</p>
+            </div>
+            <p class="mt-3 text-sm text-slate-600 dark:text-slate-300">Comprensión auditiva práctica, en píldoras.</p>
+          </div>
+          <div class="reveal rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-white/5">
+            <div class="flex items-center gap-3">
+              <span class="grid h-10 w-10 place-items-center rounded-2xl bg-gradient-to-br from-amber-500/90 to-rose-400/70 text-white"><i data-lucide="sparkles" class="h-5 w-5"></i></span>
+              <p class="text-sm font-semibold">Retos diarios y mixtos</p>
+            </div>
+            <p class="mt-3 text-sm text-slate-600 dark:text-slate-300">Sorpresa controlada para evitar el aburrimiento.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MOTIVATION -->
+    <section id="motivation" class="border-t border-slate-200/60 py-16 dark:border-white/10 sm:py-20">
+      <div class="mx-auto max-w-6xl px-4 sm:px-6">
+        <div class="reveal">
+          <h2 class="text-2xl font-semibold tracking-tight text-slate-900 dark:text-white sm:text-3xl">Motivación y progreso tangible</h2>
+          <p class="mt-3 max-w-3xl text-slate-600 dark:text-slate-300">Metas, rachas, cofres, logros, ligas, vidas y personalización — sin perder el enfoque educativo.</p>
+        </div>
+
+        <div class="mt-10 grid gap-6 lg:grid-cols-12">
+          <div class="reveal lg:col-span-7 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-white/5">
+            <div class="grid gap-4 sm:grid-cols-2">
+              <div class="rounded-3xl bg-slate-50 p-5 dark:bg-white/5">
+                <div class="flex items-center gap-2 text-sm font-semibold"><i data-lucide="target" class="h-4 w-4"></i> Metas semanales</div>
+                <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">Claridad sobre qué cuenta como avance.</p>
+              </div>
+              <div class="rounded-3xl bg-slate-50 p-5 dark:bg-white/5">
+                <div class="flex items-center gap-2 text-sm font-semibold"><i data-lucide="flame" class="h-4 w-4"></i> Rachas</div>
+                <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">Constancia con sesiones cortas.</p>
+              </div>
+              <div class="rounded-3xl bg-slate-50 p-5 dark:bg-white/5">
+                <div class="flex items-center gap-2 text-sm font-semibold"><i data-lucide="package" class="h-4 w-4"></i> Cofres</div>
+                <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">Recompensas que se notan.</p>
+              </div>
+              <div class="rounded-3xl bg-slate-50 p-5 dark:bg-white/5">
+                <div class="flex items-center gap-2 text-sm font-semibold"><i data-lucide="award" class="h-4 w-4"></i> Logros</div>
+                <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">Pequeñas victorias que refuerzan el hábito.</p>
+              </div>
+              <div class="rounded-3xl bg-slate-50 p-5 sm:col-span-2 dark:bg-white/5">
+                <div class="flex items-center gap-2 text-sm font-semibold"><i data-lucide="trophy" class="h-4 w-4"></i> Ligas</div>
+                <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">Competencia sana que mantiene el ritmo.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="reveal lg:col-span-5 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-white/5">
+            <div class="flex items-start gap-3">
+              <span class="grid h-11 w-11 place-items-center rounded-2xl bg-gradient-to-br from-indigo-500/90 to-sky-400/80 text-white"><i data-lucide="user-round" class="h-5 w-5"></i></span>
+              <div>
+                <h3 class="text-base font-semibold">Perfil personalizable</h3>
+                <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">Cuando la app se siente “tuya”, es más fácil volver mañana.</p>
+              </div>
+            </div>
+
+            <div class="mt-5 rounded-3xl bg-gradient-to-b from-slate-900 to-slate-800 p-5 text-white ring-1 ring-black/10">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-xs text-white/60">Estado</p>
+                  <p class="mt-1 text-sm font-semibold">Diamante II</p>
+                </div>
+                <span class="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-[11px] font-semibold text-white/80">
+                  <i data-lucide="heart" class="h-3.5 w-3.5 text-rose-200"></i> 3 vidas
+                </span>
+              </div>
+              <div class="mt-4 grid grid-cols-3 gap-2 text-center text-[11px] text-white/75">
+                <div class="rounded-2xl bg-white/10 p-3"><p class="font-semibold text-white">Hoy</p><p class="mt-1">8 min</p></div>
+                <div class="rounded-2xl bg-white/10 p-3"><p class="font-semibold text-white">Cofre</p><p class="mt-1">listo</p></div>
+                <div class="rounded-2xl bg-white/10 p-3"><p class="font-semibold text-white">Liga</p><p class="mt-1">top 12%</p></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- APPLE -->
+    <section id="apple" class="border-t border-slate-200/60 py-16 dark:border-white/10 sm:py-20">
+      <div class="mx-auto max-w-6xl px-4 sm:px-6">
+        <div class="reveal">
+          <h2 class="text-2xl font-semibold tracking-tight text-slate-900 dark:text-white sm:text-3xl">Ecosistema Apple</h2>
+          <p class="mt-3 max-w-3xl text-slate-600 dark:text-slate-300">iPhone como centro, widget para refuerzo diario y Apple Watch para micro-retos.</p>
+        </div>
+
+        <div class="mt-10 grid gap-6 lg:grid-cols-3">
+          <div class="reveal rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-white/5">
+            <div class="flex items-center gap-3">
+              <span class="grid h-10 w-10 place-items-center rounded-2xl bg-slate-900 text-white dark:bg-white dark:text-slate-900"><i data-lucide="smartphone" class="h-5 w-5"></i></span>
+              <p class="text-sm font-semibold">iPhone</p>
+            </div>
+            <p class="mt-3 text-sm text-slate-600 dark:text-slate-300">Mundos, modos, economía de progreso y social.</p>
+          </div>
+          <div class="reveal rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-white/5">
+            <div class="flex items-center gap-3">
+              <span class="grid h-10 w-10 place-items-center rounded-2xl bg-gradient-to-br from-indigo-500/90 to-sky-400/80 text-white"><i data-lucide="layout-dashboard" class="h-5 w-5"></i></span>
+              <p class="text-sm font-semibold">Widget</p>
+            </div>
+            <p class="mt-3 text-sm text-slate-600 dark:text-slate-300">Integra el aprendizaje en la rutina sin abrir la app.</p>
+          </div>
+          <div class="reveal rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-white/5">
+            <div class="flex items-center gap-3">
+              <span class="grid h-10 w-10 place-items-center rounded-2xl bg-gradient-to-br from-slate-900 to-slate-700 text-white"><i data-lucide="watch" class="h-5 w-5"></i></span>
+              <p class="text-sm font-semibold">Apple Watch</p>
+            </div>
+            <p class="mt-3 text-sm text-slate-600 dark:text-slate-300">Cuando tienes 30 segundos, no 30 minutos.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SOCIAL -->
+    <section id="social" class="border-t border-slate-200/60 py-16 dark:border-white/10 sm:py-20">
+      <div class="mx-auto max-w-6xl px-4 sm:px-6">
+        <div class="reveal">
+          <h2 class="text-2xl font-semibold tracking-tight text-slate-900 dark:text-white sm:text-3xl">Comunidad: amigos, rankings y desafíos</h2>
+          <p class="mt-3 max-w-3xl text-slate-600 dark:text-slate-300">Social proof real (reviews/TestFlight) encaja perfecto aquí cuando lo tengas.</p>
+        </div>
+
+        <div class="mt-10 grid gap-6 lg:grid-cols-12">
+          <div class="reveal lg:col-span-7 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-white/5">
+            <div class="grid gap-3 sm:grid-cols-3">
+              <div class="rounded-3xl bg-slate-50 p-4 dark:bg-white/5">
+                <p class="text-xs font-semibold text-slate-700 dark:text-slate-200">Amigos</p>
+                <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">Motivación social sin perder el foco.</p>
+              </div>
+              <div class="rounded-3xl bg-slate-50 p-4 dark:bg-white/5">
+                <p class="text-xs font-semibold text-slate-700 dark:text-slate-200">Rankings</p>
+                <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">Competencia ligera, sesiones cortas.</p>
+              </div>
+              <div class="rounded-3xl bg-slate-50 p-4 dark:bg-white/5">
+                <p class="text-xs font-semibold text-slate-700 dark:text-slate-200">Desafíos</p>
+                <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">Retos que encajan en tu día.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="reveal lg:col-span-5 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-white/5">
+            <div class="rounded-3xl bg-gradient-to-b from-slate-900 to-slate-800 p-5 text-white ring-1 ring-black/10">
+              <div class="flex items-center justify-between">
+                <p class="text-sm font-semibold">Ranking semanal</p>
+                <span class="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-[11px] font-semibold text-white/80"><i data-lucide="trophy" class="h-3.5 w-3.5"></i> Liga</span>
+              </div>
+              <div class="mt-4 space-y-2 text-sm">
+                <div class="flex items-center justify-between rounded-2xl bg-white/10 px-3 py-2"><span class="text-white/80">1. Alex</span><span class="font-semibold">9820</span></div>
+                <div class="flex items-center justify-between rounded-2xl bg-white/10 px-3 py-2"><span class="text-white/80">2. Marta</span><span class="font-semibold">9645</span></div>
+                <div class="flex items-center justify-between rounded-2xl bg-white/10 px-3 py-2"><span class="text-white/80">3. Tú</span><span class="font-semibold">9430</span></div>
+              </div>
+              <p class="mt-4 text-[11px] text-white/55">Placeholder visual — sustituye por datos reales.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRICING -->
+    <section id="pricing" class="border-t border-slate-200/60 py-16 dark:border-white/10 sm:py-20">
+      <div class="mx-auto max-w-6xl px-4 sm:px-6">
+        <div class="reveal">
+          <h2 class="text-2xl font-semibold tracking-tight text-slate-900 dark:text-white sm:text-3xl">Gratis vs Pro</h2>
+          <p class="mt-3 max-w-3xl text-slate-600 dark:text-slate-300">Pro acelera la experiencia: más mundos, menos fricción, recuperación más rápida, menos espera, sin anuncios y acceso completo.</p>
+        </div>
+
+        <div class="mt-10 grid gap-6 lg:grid-cols-2">
+          <div class="reveal rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-white/5">
+            <div class="flex items-center justify-between">
+              <h3 class="text-base font-semibold">Gratis</h3>
+              <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700 dark:bg-white/10 dark:text-slate-200">Empezar</span>
+            </div>
+            <ul class="mt-4 space-y-3 text-sm text-slate-600 dark:text-slate-300">
+              <li class="flex gap-2"><i data-lucide="check" class="mt-0.5 h-4 w-4 text-emerald-500"></i> Rutina diaria y experiencia core</li>
+              <li class="flex gap-2"><i data-lucide="check" class="mt-0.5 h-4 w-4 text-emerald-500"></i> Práctica con tarjetas + repaso</li>
+              <li class="flex gap-2"><i data-lucide="check" class="mt-0.5 h-4 w-4 text-emerald-500"></i> Progreso y motivación básica</li>
+              <li class="flex gap-2"><i data-lucide="info" class="mt-0.5 h-4 w-4 text-slate-400"></i> Límites / esperas (según tu modelo)</li>
+            </ul>
+          </div>
+
+          <div class="reveal rounded-3xl border border-slate-200 bg-white p-6 shadow-sm ring-2 ring-indigo-500/25 dark:border-white/10 dark:bg-white/5 dark:ring-indigo-400/20">
+            <div class="flex items-center justify-between">
+              <h3 class="text-base font-semibold">Pro</h3>
+              <span class="rounded-full bg-indigo-600 px-3 py-1 text-xs font-semibold text-white dark:bg-indigo-500">Acelera</span>
+            </div>
+            <ul class="mt-4 space-y-3 text-sm text-slate-600 dark:text-slate-300">
+              <li class="flex gap-2"><i data-lucide="check" class="mt-0.5 h-4 w-4 text-emerald-500"></i> Más mundos y contenido completo</li>
+              <li class="flex gap-2"><i data-lucide="check" class="mt-0.5 h-4 w-4 text-emerald-500"></i> Menos fricción: menos espera, recuperación más rápida</li>
+              <li class="flex gap-2"><i data-lucide="check" class="mt-0.5 h-4 w-4 text-emerald-500"></i> Sin anuncios</li>
+              <li class="flex gap-2"><i data-lucide="check" class="mt-0.5 h-4 w-4 text-emerald-500"></i> Acceso completo a modos Pro</li>
+            </ul>
+            <div class="mt-6 rounded-2xl bg-slate-50 p-4 text-sm text-slate-600 dark:bg-white/5 dark:text-slate-300">
+              Añade precio real (mensual/anual) y una política clara para cerrar la duda de último segundo.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURES (3 columns) -->
+    <section id="features" class="border-t border-slate-200/60 py-16 dark:border-white/10 sm:py-20">
+      <div class="mx-auto max-w-6xl px-4 sm:px-6">
+        <div class="reveal">
+          <h2 class="text-2xl font-semibold tracking-tight text-slate-900 dark:text-white sm:text-3xl">Por qué se siente distinto</h2>
+          <p class="mt-3 max-w-2xl text-slate-600 dark:text-slate-300">Simplicidad, Apple en tu rutina y velocidad real.</p>
+        </div>
+
+        <div class="mt-10 grid gap-6 md:grid-cols-3">
+          <article class="reveal rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-white/5">
+            <div class="flex items-start gap-4">
+              <span class="grid h-12 w-12 place-items-center rounded-2xl bg-slate-900 text-white dark:bg-white dark:text-slate-900"><i data-lucide="wand-2" class="h-5 w-5"></i></span>
+              <div>
+                <h3 class="text-base font-semibold">Simplicidad</h3>
+                <p class="mt-1 text-sm text-slate-600 dark:text-slate-300">Menos pantallas, más práctica. El gesto guía la sesión.</p>
+              </div>
+            </div>
+          </article>
+          <article class="reveal rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-white/5">
+            <div class="flex items-start gap-4">
+              <span class="grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-br from-indigo-500/90 to-sky-400/80 text-white"><i data-lucide="watch" class="h-5 w-5"></i></span>
+              <div>
+                <h3 class="text-base font-semibold">Apple Watch</h3>
+                <p class="mt-1 text-sm text-slate-600 dark:text-slate-300">Micro-retos donde ya estás mirando.</p>
+              </div>
+            </div>
+          </article>
+          <article class="reveal rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-white/5">
+            <div class="flex items-start gap-4">
+              <span class="grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-br from-rose-500/90 to-orange-400/80 text-white"><i data-lucide="zap" class="h-5 w-5"></i></span>
+              <div>
+                <h3 class="text-base font-semibold">Rapidez</h3>
+                <p class="mt-1 text-sm text-slate-600 dark:text-slate-300">Sesiones cortas con feedback inmediato.</p>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- WAITLIST -->
+    <section id="waitlist" class="border-t border-slate-200/60 py-16 dark:border-white/10 sm:py-20">
+      <div class="mx-auto max-w-6xl px-4 sm:px-6">
+        <div class="reveal overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm dark:border-white/10 dark:bg-white/5">
+          <div class="relative p-8 sm:p-10">
+            <div class="absolute inset-0 opacity-80"
+                 style="background:
+                   radial-gradient(circle at 20% 30%, rgba(99,102,241,.18), transparent 55%),
+                   radial-gradient(circle at 80% 30%, rgba(34,197,94,.12), transparent 55%),
+                   radial-gradient(circle at 50% 80%, rgba(244,63,94,.10), transparent 55%);"></div>
+
+            <div class="relative grid gap-8 lg:grid-cols-12 lg:items-center">
+              <div class="lg:col-span-7">
+                <h2 class="text-2xl font-semibold tracking-tight text-slate-900 dark:text-white sm:text-3xl">Descarga, prueba gratis o empieza hoy</h2>
+                <p class="mt-3 max-w-2xl text-slate-600 dark:text-slate-300">
+                  Si estás en lista de acceso, deja tu email. Si ya estás publicado, reemplaza este bloque por el botón oficial de App Store.
+                </p>
+                <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
+                  <a href="#waitlist" class="inline-flex items-center justify-center gap-2 rounded-xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200">
+                    <i data-lucide="download" class="h-4 w-4"></i>
+                    Empezar / Early Access
+                  </a>
+                  <a href="#demo" class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-800 shadow-sm transition hover:bg-slate-50 dark:border-white/10 dark:bg-white/5 dark:text-slate-100 dark:hover:bg-white/10">
+                    <i data-lucide="play" class="h-4 w-4"></i>
+                    Ver demo otra vez
+                  </a>
+                </div>
+              </div>
+
+              <div class="lg:col-span-5">
+                <form id="waitlistForm" class="rounded-3xl border border-slate-200 bg-white/70 p-5 shadow-sm backdrop-blur dark:border-white/10 dark:bg-white/5">
+                  <label class="block text-sm font-semibold text-slate-900 dark:text-white" for="email">Déjanos tu email</label>
+                  <div class="mt-2 flex gap-2">
+                    <div class="relative flex-1">
+                      <i data-lucide="mail" class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"></i>
+                      <input id="email" name="email" type="email" required placeholder="tu@correo.com"
+                             class="w-full rounded-xl border border-slate-200 bg-white px-10 py-3 text-sm text-slate-900 shadow-sm outline-none transition focus:border-slate-400 focus:ring-4 focus:ring-slate-200/60 dark:border-white/10 dark:bg-[#0f1117]/40 dark:text-white dark:focus:border-white/20 dark:focus:ring-white/10" />
+                    </div>
+                    <button type="submit" class="inline-flex items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200">
+                      <i data-lucide="arrow-right" class="h-4 w-4"></i>
+                      Enviar
+                    </button>
+                  </div>
+                  <p id="formHelp" class="mt-3 text-xs text-slate-500 dark:text-slate-400">Te avisaremos cuando haya acceso. Sin spam.</p>
+                  <div id="formSuccess" class="mt-3 hidden rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-200">
+                    Listo. Revisa tu bandeja (y spam) por si acaso.
+                  </div>
+                </form>
+                <p class="mt-3 text-center text-xs text-slate-500 dark:text-slate-400">Integración sugerida: Netlify Forms, Formspree o endpoint propio.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-slate-200/60 py-10 dark:border-white/10">
+      <div class="mx-auto max-w-6xl px-4 sm:px-6">
+        <div class="flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-center">
+          <div class="flex items-center gap-3">
+            <img src="assets/app-icon.png" width="40" height="40" alt=""
+                 class="h-10 w-10 rounded-2xl object-cover shadow-sm ring-1 ring-black/5 dark:ring-white/10" />
+            <div>
+              <p class="font-brand text-sm font-extrabold tracking-tight text-slate-900 dark:text-white">LingoSwipe</p>
+              <p class="text-xs text-slate-500 dark:text-slate-400">Visual, práctica, gamificada — con propósito.</p>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2">
+            <a class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:bg-white/10" href="#" aria-label="X / Twitter">
+              <i data-lucide="twitter" class="h-4 w-4"></i> X
+            </a>
+            <a class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:bg-white/10" href="#" aria-label="Instagram">
+              <i data-lucide="instagram" class="h-4 w-4"></i> Instagram
+            </a>
+            <a class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:bg-white/10" href="#" aria-label="TikTok">
+              <i data-lucide="video" class="h-4 w-4"></i> TikTok
+            </a>
+          </div>
+        </div>
+
+        <div class="mt-8 flex flex-col justify-between gap-3 border-t border-slate-200/60 pt-6 text-xs text-slate-500 dark:border-white/10 dark:text-slate-400 sm:flex-row sm:items-center">
+          <p>© <span id="year"></span> LingoSwipe. Todos los derechos reservados.</p>
+          <div class="flex gap-4">
+            <a class="hover:text-slate-900 dark:hover:text-white" href="#">Privacidad</a>
+            <a class="hover:text-slate-900 dark:hover:text-white" href="#">Términos</a>
+            <a class="hover:text-slate-900 dark:hover:text-white" href="#waitlist">Early Access</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </main>
+
+  <script>
+    lucide.createIcons();
+
+    document.getElementById("year").textContent = String(new Date().getFullYear());
+
+    const root = document.documentElement;
+    const themeToggle = document.getElementById("themeToggle");
+    const stored = localStorage.getItem("ls_theme");
+    const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+    function applyTheme(mode) {
+      if (mode === "dark") root.classList.add("dark");
+      else root.classList.remove("dark");
+      localStorage.setItem("ls_theme", mode);
+    }
+
+    applyTheme(stored ? stored : (prefersDark ? "dark" : "light"));
+
+    themeToggle.addEventListener("click", () => {
+      const isDark = root.classList.contains("dark");
+      applyTheme(isDark ? "light" : "dark");
+      lucide.createIcons();
+    });
+
+    // Scroll reveal (stable, no layout-breaking transforms)
+    const revealEls = Array.from(document.querySelectorAll(".reveal"));
+    const io = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        entry.target.classList.add("is-visible");
+        io.unobserve(entry.target);
+      }
+    }, { threshold: 0.12, rootMargin: "0px 0px -10% 0px" });
+
+    revealEls.forEach((el) => io.observe(el));
+
+    // Waitlist demo
+    const form = document.getElementById("waitlistForm");
+    const success = document.getElementById("formSuccess");
+    const help = document.getElementById("formHelp");
+
+    form.addEventListener("submit", (ev) => {
+      ev.preventDefault();
+      const email = form.email.value.trim();
+      if (!email) return;
+      success.classList.remove("hidden");
+      help.textContent = "Gracias. Si tu email es válido, lo guardaremos para avisarte.";
+      form.email.value = "";
+    });
+  </script>
+</body>
+</html>
