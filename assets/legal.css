@@ -1,0 +1,103 @@
+/* Shared with the pages generated from the app's legal text. */
+:root {
+  color-scheme: dark;
+}
+body {
+  background: #11171b;
+  color: #f5f6ee;
+  font-family:
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    sans-serif;
+  line-height: 1.8;
+}
+.marco {
+  max-width: 850px;
+  padding: 32px 24px 65px;
+}
+.cabecera {
+  gap: 24px;
+  padding-bottom: 25px;
+  border-bottom: 1px solid #344047;
+}
+.marca {
+  color: #f5f6ee;
+  letter-spacing: -0.6px;
+}
+.marca img {
+  box-shadow: none;
+}
+.idiomas {
+  gap: 6px;
+}
+.idiomas button {
+  min-height: 44px;
+  border: 1px solid #455249;
+  background: transparent;
+  color: #c0c9bd;
+  border-radius: 8px;
+  padding: 7px 12px;
+}
+.idiomas button[aria-pressed="true"] {
+  background: #d4f77b;
+  color: #192b19;
+  border-color: #d4f77b;
+}
+h1 {
+  font-size: clamp(30px, 6vw, 46px);
+  line-height: 1.2;
+  letter-spacing: -1.4px;
+  margin: 45px 0 30px;
+}
+h2 {
+  font-size: 20px;
+  margin: 35px 0 10px;
+  line-height: 1.45;
+}
+p {
+  color: #b8c1bc;
+  font-size: 15px;
+}
+a {
+  color: #d4f77b;
+}
+a:hover {
+  text-decoration: underline;
+}
+.fecha {
+  color: #aeb8bc;
+}
+.pie {
+  border-color: #344047;
+  gap: 20px;
+}
+.pie a {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+.correo {
+  font-size: clamp(16px, 5vw, 21px);
+  overflow-wrap: anywhere;
+}
+.idiomas button:focus-visible,
+a:focus-visible {
+  outline: 3px solid #f9b99f;
+  outline-offset: 4px;
+}
+@media (max-width: 540px) {
+  .marco {
+    padding-inline: 20px;
+  }
+  .idiomas {
+    gap: 5px;
+  }
+  .idiomas button {
+    font-size: 12px;
+    padding-inline: 10px;
+  }
+  p {
+    font-size: 14px;
+  }
+}
