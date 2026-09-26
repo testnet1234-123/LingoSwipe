@@ -3,8 +3,8 @@
   color-scheme: dark;
 }
 body {
-  background: #11171b;
-  color: #f5f6ee;
+  background: #0d101a;
+  color: #f9fafb;
   font-family:
     system-ui,
     -apple-system,
@@ -19,10 +19,10 @@ body {
 .cabecera {
   gap: 24px;
   padding-bottom: 25px;
-  border-bottom: 1px solid #344047;
+  border-bottom: 1px solid #343b50;
 }
 .marca {
-  color: #f5f6ee;
+  color: #f9fafb;
   letter-spacing: -0.6px;
 }
 .marca img {
@@ -33,16 +33,16 @@ body {
 }
 .idiomas button {
   min-height: 44px;
-  border: 1px solid #455249;
+  border: 1px solid #455173;
   background: transparent;
-  color: #c0c9bd;
+  color: #c0c9dd;
   border-radius: 8px;
   padding: 7px 12px;
 }
 .idiomas button[aria-pressed="true"] {
-  background: #d4f77b;
-  color: #192b19;
-  border-color: #d4f77b;
+  background: #8abcff;
+  color: #17213d;
+  border-color: #8abcff;
 }
 h1 {
   font-size: clamp(30px, 6vw, 46px);
@@ -56,20 +56,20 @@ h2 {
   line-height: 1.45;
 }
 p {
-  color: #b8c1bc;
+  color: #b8c1d8;
   font-size: 15px;
 }
 a {
-  color: #d4f77b;
+  color: #8abcff;
 }
 a:hover {
   text-decoration: underline;
 }
 .fecha {
-  color: #aeb8bc;
+  color: #aeb8cf;
 }
 .pie {
-  border-color: #344047;
+  border-color: #343b50;
   gap: 20px;
 }
 .pie a {
@@ -83,7 +83,7 @@ a:hover {
 }
 .idiomas button:focus-visible,
 a:focus-visible {
-  outline: 3px solid #f9b99f;
+  outline: 3px solid #bab3ff;
   outline-offset: 4px;
 }
 @media (max-width: 540px) {

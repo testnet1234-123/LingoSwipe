@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#11171b" />
+    <meta name="theme-color" content="#0d101a" />
     <title>RivalWord — Aprende palabras. Comparte la revancha.</title>
     <meta
       name="description"
@@ -31,11 +31,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Manrope:wght@400;500;600;700;800&amp;display=swap"
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&amp;display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="/assets/site.css?v=20260923" />
-    <script src="/assets/site.js?v=20260923" defer></script>
+    <link rel="stylesheet" href="/assets/site.css?v=20260926" />
+    <script src="/assets/site.js?v=20260926" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main">Saltar al contenido</a>
@@ -60,10 +60,10 @@
           <span></span><span></span>
         </button>
         <nav id="navigation" aria-label="Principal">
-          <a href="#arena">La Arena</a><a href="#aprender">Aprende</a
+          <a href="#arena">La Arena</a><a href="#aprender">Swipe</a
           ><a href="#mundos">Mundos</a><a href="#modos">Modos</a>
         </nav>
-        <a class="button button-small nav-cta" href="#demo"
+        <a class="button button-small nav-cta" href="#aprender"
           >Pruébalo <span aria-hidden="true">↗</span></a
         >
       </div>
@@ -84,10 +84,10 @@
             aprendido.
           </p>
           <div class="actions">
-            <a class="button" href="#demo"
-              >Prueba una partida <span aria-hidden="true">↗</span></a
-            ><a class="text-link" href="#aprender"
-              >Descubre la app <span aria-hidden="true">↓</span></a
+            <a class="button" href="#aprender"
+              >Desliza una tarjeta <span aria-hidden="true">↗</span></a
+            ><a class="text-link" href="#demo"
+              >Prueba la Arena <span aria-hidden="true">↓</span></a
             >
           </div>
           <div class="hero-notes">
@@ -170,10 +170,134 @@
         </div>
       </div>
 
+      <section id="aprender" class="section container learn-layout">
+        <div class="learning-copy">
+          <span class="eyebrow"
+            >01 / PRIMERO LO APRENDES. LUEGO LO JUEGAS.</span
+          >
+          <h2>Palabras que<br /><em>se quedan contigo.</em></h2>
+          <p class="lead">
+            Desliza a la derecha si ya la sabes; a la izquierda si necesitas
+            practicarla. La tarjeta sigue tu gesto, como en la app. Pruébalo
+            aquí.
+          </p>
+          <div
+            class="language-buttons"
+            role="group"
+            aria-label="Idioma de la tarjeta"
+          >
+            <button type="button" data-language="de" aria-pressed="true">
+              Alemán</button
+            ><button type="button" data-language="en" aria-pressed="false">
+              Inglés</button
+            ><button type="button" data-language="fr" aria-pressed="false">
+              Francés</button
+            ><button type="button" data-language="bg" aria-pressed="false">
+              Búlgaro</button
+            ><button type="button" data-language="es" aria-pressed="false">
+              Español
+            </button>
+          </div>
+          <ol class="learning-steps">
+            <li>
+              <span>01</span>
+              <div>
+                <h3>Descubre y escucha</h3>
+                <p>
+                  Vocabulario y frases útiles, con pronunciación para entrenar
+                  el oído.
+                </p>
+              </div>
+            </li>
+            <li>
+              <span>02</span>
+              <div>
+                <h3>Decide cuánto sabes</h3>
+                <p>
+                  Marca lo que recuerdas y lo que necesitas practicar. Cada
+                  respuesta orienta tus repasos.
+                </p>
+              </div>
+            </li>
+            <li>
+              <span>03</span>
+              <div>
+                <h3>Vuelve a lo que más cuesta</h3>
+                <p>
+                  La repetición espaciada organiza cuándo repasar. Tus errores
+                  también te ayudan a avanzar.
+                </p>
+              </div>
+            </li>
+          </ol>
+        </div>
+        <div class="flash-stage">
+          <span class="eyebrow">UN GESTO. UNA PALABRA MÁS.</span>
+          <p class="swipe-instruction" id="swipe-help">
+            Arrastra con el ratón o desliza con el dedo.
+          </p>
+          <div class="swipe-viewport">
+            <div class="flash-stack">
+              <div
+                class="flashcard"
+                tabindex="0"
+                role="group"
+                aria-label="Tarjeta de vocabulario. Usa las flechas para valorar."
+                aria-describedby="swipe-help"
+                data-state="idle"
+              >
+                <div class="flash-top">
+                  <span class="flash-new">Nueva</span
+                  ><span id="flash-language">ALEMÁN</span>
+                </div>
+                <span class="swipe-stamp" aria-hidden="true"></span>
+                <span class="flash-hello" aria-hidden="true">✦</span>
+                <strong id="flash-word" lang="de">Hallo</strong>
+                <span id="flash-translation" aria-live="polite"
+                  >¿Ya sabes qué significa?</span
+                >
+                <button class="flash-reveal" type="button">
+                  Mostrar traducción <span aria-hidden="true">↗</span>
+                </button>
+                <span class="swipe-hand" aria-hidden="true">☝</span>
+              </div>
+            </div>
+          </div>
+          <div
+            class="flash-actions"
+            role="group"
+            aria-label="Valora la tarjeta"
+          >
+            <button type="button" data-rating="again" aria-label="No aprendida">
+              <span aria-hidden="true">←</span>No aprendida
+            </button>
+            <button type="button" data-rating="known" aria-label="Aprendida">
+              <span aria-hidden="true">→</span>Aprendida
+            </button>
+            <button type="button" data-rating="hard" aria-label="Difícil">
+              <span aria-hidden="true">↑</span>Difícil
+            </button>
+            <button
+              type="button"
+              data-rating="very-hard"
+              aria-label="Muy difícil"
+            >
+              <span aria-hidden="true">↓</span>Muy difícil
+            </button>
+          </div>
+          <p id="flash-status" role="status">
+            ← No aprendida · Aprendida →<br />También puedes usar las flechas
+            del teclado.
+          </p>
+          <button class="swipe-tutorial" type="button">Ver el gesto</button>
+          <small>Demostración · no guarda tu progreso en la app</small>
+        </div>
+      </section>
+
       <section id="arena" class="section container">
         <div class="section-heading">
           <div>
-            <span class="eyebrow">01 / APRENDER TIENE UN LADO SOCIAL</span>
+            <span class="eyebrow">02 / APRENDER TIENE UN LADO SOCIAL</span>
             <h2>Mejor con amigos.<br /><em>Más divertido con rivales.</em></h2>
           </div>
           <p>
@@ -315,7 +439,7 @@
         <div class="container demo-layout">
           <div>
             <span class="eyebrow">MENOS EXPLICAR. MÁS JUGAR.</span>
-            <h2>Tu primera<br />mini<span class="lime">victoria.</span></h2>
+            <h2>Tu primera<br />mini<span class="accent">victoria.</span></h2>
             <p class="lead">
               Tres palabras en alemán. Una pequeña muestra de lo que pasa cuando
               aprender se convierte en jugar.
@@ -350,92 +474,6 @@
               </p></noscript
             >
           </div>
-        </div>
-      </section>
-
-      <section id="aprender" class="section container learn-layout">
-        <div class="learning-copy">
-          <span class="eyebrow"
-            >02 / PRIMERO LO APRENDES. LUEGO LO JUEGAS.</span
-          >
-          <h2>Palabras que<br /><em>se quedan contigo.</em></h2>
-          <p class="lead">
-            Tarjetas, audio y repasos que se adaptan a tus respuestas. Elige un
-            idioma y descubre el primer gesto.
-          </p>
-          <div
-            class="language-buttons"
-            role="group"
-            aria-label="Idioma de la tarjeta"
-          >
-            <button type="button" data-language="de" aria-pressed="true">
-              Alemán</button
-            ><button type="button" data-language="en" aria-pressed="false">
-              Inglés</button
-            ><button type="button" data-language="fr" aria-pressed="false">
-              Francés</button
-            ><button type="button" data-language="bg" aria-pressed="false">
-              Búlgaro</button
-            ><button type="button" data-language="es" aria-pressed="false">
-              Español
-            </button>
-          </div>
-          <ol class="learning-steps">
-            <li>
-              <span>01</span>
-              <div>
-                <h3>Descubre y escucha</h3>
-                <p>
-                  Vocabulario y frases útiles, con pronunciación para entrenar
-                  el oído.
-                </p>
-              </div>
-            </li>
-            <li>
-              <span>02</span>
-              <div>
-                <h3>Decide cuánto sabes</h3>
-                <p>
-                  Marca lo que recuerdas y lo que necesitas practicar. Cada
-                  respuesta orienta tus repasos.
-                </p>
-              </div>
-            </li>
-            <li>
-              <span>03</span>
-              <div>
-                <h3>Vuelve a lo que más cuesta</h3>
-                <p>
-                  La repetición espaciada organiza cuándo repasar. Tus errores
-                  también te ayudan a avanzar.
-                </p>
-              </div>
-            </li>
-          </ol>
-        </div>
-        <div class="flash-stage">
-          <span class="eyebrow">TOCA. DESCUBRE. RECUERDA.</span>
-          <div class="flashcard">
-            <div class="flash-top">
-              <span id="flash-language">ALEMÁN</span
-              ><span aria-hidden="true">✦</span>
-            </div>
-            <span class="flash-hello" aria-hidden="true">☺</span
-            ><strong id="flash-word" lang="de">Hallo</strong
-            ><span id="flash-translation" aria-live="polite"
-              >¿Ya sabes qué significa?</span
-            ><button class="flash-reveal" type="button">
-              Mostrar traducción <span aria-hidden="true">↗</span>
-            </button>
-          </div>
-          <div class="flash-actions">
-            <button type="button" data-rating="again">← Aún no</button
-            ><button type="button" data-rating="known">La sé ✓</button>
-          </div>
-          <p id="flash-status" role="status">
-            Prueba con los botones o desliza la tarjeta.
-          </p>
-          <small>Demostración · no guarda tu progreso</small>
         </div>
       </section>
 

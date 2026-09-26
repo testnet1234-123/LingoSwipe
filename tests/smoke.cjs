@@ -44,7 +44,9 @@ const assert = require("node:assert/strict");
   await page.mouse.down();
   await page.mouse.move(card.x + 180, card.y + 150, { steps: 8 });
   await page.mouse.up();
-  assert.match(await page.locator("#flash-word").innerText(), /Merci/);
+  await page.waitForFunction(
+    () => document.querySelector("#flash-word").textContent === "Merci",
+  );
   const question = page.locator("#faq summary").first();
   await question.focus();
   await page.keyboard.press("Enter");
