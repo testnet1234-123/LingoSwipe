@@ -1,0 +1,17 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": [
+          "KFD378GT64.com.rivalword.app"
+        ],
+        "components": [
+          {
+            "/": "/r/*",
+            "comment": "Retos en diferido"
+          }
+        ]
+      }
+    ]
+  }
+}
