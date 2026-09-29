@@ -3,7 +3,10 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Página no encontrada — RivalWord</title>
+  <title>RivalWord</title>
+  <meta property="og:title" content="RivalWord" />
+  <meta property="og:description" content="Te han retado en RivalWord" />
+  <meta property="og:image" content="https://rivalword.online/assets/apple-touch-icon.png" />
   <meta name="description" content="Página no encontrada" />
   <link rel="canonical" href="https://rivalword.online/" />
   <link rel="icon" href="/assets/app-icon.png?v=20260927" />
@@ -47,8 +50,28 @@
       <nav class="idiomas" aria-label="Language"><button type="button" data-lang="es" aria-pressed="true">Español</button><button type="button" data-lang="en" aria-pressed="false">English</button><button type="button" data-lang="de" aria-pressed="false">Deutsch</button><button type="button" data-lang="fr" aria-pressed="false">Français</button><button type="button" data-lang="bg" aria-pressed="false">Български</button></nav>
     </header>
     <main>
+      <section id="no-encontrada">
       <h1><span data-i="es">Página no encontrada</span><span data-i="en" hidden>Page not found</span><span data-i="de" hidden>Seite nicht gefunden</span><span data-i="fr" hidden>Page introuvable</span><span data-i="bg" hidden>Страницата не е намерена</span></h1>
       <p><a href="/"><span data-i="es">Volver al inicio</span><span data-i="en" hidden>Back to home</span><span data-i="de" hidden>Zurück zur Startseite</span><span data-i="fr" hidden>Retour à l&#x27;accueil</span><span data-i="bg" hidden>Към началото</span></a></p>
+      </section>
+      <section id="reto" hidden>
+      <h1><span data-i="es">Te han retado en RivalWord</span><span data-i="en" hidden>You&#x27;ve been challenged on RivalWord</span><span data-i="de" hidden>Du wurdest in RivalWord herausgefordert</span><span data-i="fr" hidden>On t&#x27;a lancé un défi sur RivalWord</span><span data-i="bg" hidden>Предизвикаха те в RivalWord</span></h1>
+      <a id="abrir-reto" href="/" style="display:block;text-align:center;font-weight:800;font-size:18px;text-decoration:none;border-radius:16px;padding:14px 18px;margin:12px 0;color:#fff;background:linear-gradient(135deg,#3B82F6,#8B5CF6)"><span data-i="es">Abrir el reto</span><span data-i="en" hidden>Open the challenge</span><span data-i="de" hidden>Herausforderung öffnen</span><span data-i="fr" hidden>Ouvrir le défi</span><span data-i="bg" hidden>Отвори предизвикателството</span></a>
+      <a href="https://apps.apple.com/app/id6815879332" style="display:block;text-align:center;font-weight:800;font-size:18px;text-decoration:none;border-radius:16px;padding:14px 18px;margin:12px 0;color:#93B4FF;background:rgba(255,255,255,0.06)"><span data-i="es">Descargar RivalWord</span><span data-i="en" hidden>Download RivalWord</span><span data-i="de" hidden>RivalWord laden</span><span data-i="fr" hidden>Télécharger RivalWord</span><span data-i="bg" hidden>Изтегли RivalWord</span></a>
+      <p><span data-i="es">Si no se abre solo: instala RivalWord y pega el mensaje en Arena → Pegar reto.</span><span data-i="en" hidden>If it doesn&#x27;t open by itself: install RivalWord and paste the message in Arena → Paste challenge.</span><span data-i="de" hidden>Falls es sich nicht öffnet: Installiere RivalWord und füge die Nachricht in Arena → Herausforderung einfügen ein.</span><span data-i="fr" hidden>S&#x27;il ne s&#x27;ouvre pas tout seul : installe RivalWord et colle le message dans Arène → Coller un défi.</span><span data-i="bg" hidden>Ако не се отвори само: инсталирай RivalWord и постави съобщението в Арена → Постави предизвикателство.</span></p>
+      </section>
+      <script>
+    (function () {
+      var m = /^\/r\/([2-9A-HJ-NP-Z]{7})\/?$/.exec(location.pathname);
+      if (!m) return;
+      var app = "rivalword://r/" + m[1];
+      document.getElementById("no-encontrada").hidden = true;
+      document.getElementById("reto").hidden = false;
+      document.getElementById("abrir-reto").href = app;
+      document.title = "RivalWord";
+      location.href = app;
+    })();
+      </script>
     </main>
     <nav class="pie"><a href="/"><span data-i="es">Inicio</span><span data-i="en" hidden>Home</span><span data-i="de" hidden>Startseite</span><span data-i="fr" hidden>Accueil</span><span data-i="bg" hidden>Начало</span></a><a href="/privacy/"><span data-i="es">Política de privacidad</span><span data-i="en" hidden>Privacy policy</span><span data-i="de" hidden>Datenschutzrichtlinie</span><span data-i="fr" hidden>Politique de confidentialité</span><span data-i="bg" hidden>Политика за поверителност</span></a><a href="/terms/"><span data-i="es">Términos de uso</span><span data-i="en" hidden>Terms of use</span><span data-i="de" hidden>Nutzungsbedingungen</span><span data-i="fr" hidden>Conditions d&#x27;utilisation</span><span data-i="bg" hidden>Условия за ползване</span></a><a href="/support/"><span data-i="es">Soporte</span><span data-i="en" hidden>Support</span><span data-i="de" hidden>Support</span><span data-i="fr" hidden>Assistance</span><span data-i="bg" hidden>Поддръжка</span></a></nav>
   </div>
