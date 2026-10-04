@@ -60,14 +60,21 @@
       <a href="https://apps.apple.com/app/id6815879332" style="display:block;text-align:center;font-weight:800;font-size:18px;text-decoration:none;border-radius:16px;padding:14px 18px;margin:12px 0;color:#93B4FF;background:rgba(255,255,255,0.06)"><span data-i="es">Descargar RivalWord</span><span data-i="en" hidden>Download RivalWord</span><span data-i="de" hidden>RivalWord laden</span><span data-i="fr" hidden>Télécharger RivalWord</span><span data-i="bg" hidden>Изтегли RivalWord</span></a>
       <p><span data-i="es">Si no se abre solo: instala RivalWord y pega el mensaje en Arena → Pegar reto.</span><span data-i="en" hidden>If it doesn&#x27;t open by itself: install RivalWord and paste the message in Arena → Paste challenge.</span><span data-i="de" hidden>Falls es sich nicht öffnet: Installiere RivalWord und füge die Nachricht in Arena → Herausforderung einfügen ein.</span><span data-i="fr" hidden>S&#x27;il ne s&#x27;ouvre pas tout seul : installe RivalWord et colle le message dans Arène → Coller un défi.</span><span data-i="bg" hidden>Ако не се отвори само: инсталирай RivalWord и постави съобщението в Арена → Постави предизвикателство.</span></p>
       </section>
+      <section id="amigo" hidden>
+      <h1><span data-i="es">Añade a tu amigo en RivalWord</span><span data-i="en" hidden>Add your friend on RivalWord</span><span data-i="de" hidden>Füge deinen Freund in RivalWord hinzu</span><span data-i="fr" hidden>Ajoutez votre ami sur RivalWord</span><span data-i="bg" hidden>Добави приятеля си в RivalWord</span></h1>
+      <a id="abrir-amigo" href="/" style="display:block;text-align:center;font-weight:800;font-size:18px;text-decoration:none;border-radius:16px;padding:14px 18px;margin:12px 0;color:#fff;background:linear-gradient(135deg,#3B82F6,#8B5CF6)"><span data-i="es">Abrir RivalWord</span><span data-i="en" hidden>Open RivalWord</span><span data-i="de" hidden>RivalWord öffnen</span><span data-i="fr" hidden>Ouvrir RivalWord</span><span data-i="bg" hidden>Отвори RivalWord</span></a>
+      <a href="https://apps.apple.com/app/id6815879332" style="display:block;text-align:center;font-weight:800;font-size:18px;text-decoration:none;border-radius:16px;padding:14px 18px;margin:12px 0;color:#93B4FF;background:rgba(255,255,255,0.06)"><span data-i="es">Descargar RivalWord</span><span data-i="en" hidden>Download RivalWord</span><span data-i="de" hidden>RivalWord laden</span><span data-i="fr" hidden>Télécharger RivalWord</span><span data-i="bg" hidden>Изтегли RivalWord</span></a>
+      <p><span data-i="es">Si no se abre, copia este enlace y pégalo en Arena → Amigos → Añadir amigo. Confirma el envío; tu amigo deberá aceptar la solicitud.</span><span data-i="en" hidden>If it does not open, copy this link and paste it in Arena → Friends → Add friend. Confirm sending; your friend must accept the request.</span><span data-i="de" hidden>Falls es sich nicht öffnet, kopiere den Link und füge ihn unter Arena → Freunde → Freund hinzufügen ein. Bestätige das Senden; dein Freund muss die Anfrage annehmen.</span><span data-i="fr" hidden>Si l’app ne s’ouvre pas, copiez ce lien et collez-le dans Arène → Amis → Ajouter un ami. Confirmez l’envoi ; votre ami doit accepter la demande.</span><span data-i="bg" hidden>Ако приложението не се отвори, копирай връзката и я постави в Арена → Приятели → Добавяне на приятел. Потвърди изпращането; приятелят ти трябва да приеме заявката.</span></p>
+      </section>
       <script>
     (function () {
-      var m = /^\/r\/([2-9A-HJ-NP-Z]{7})\/?$/.exec(location.pathname);
+      var m = /^\/(r|f)\/([A-Za-z0-9]{7,8})\/?$/.exec(location.pathname);
       if (!m) return;
-      var app = "rivalword://r/" + m[1];
+      if ((m[1] === "r" && !/^[23456789ABCDEFGHJKMNPQRSTUVWXYZ]{7}$/.test(m[2])) || (m[1] === "f" && !/^[A-Za-z0-9]{8}$/.test(m[2]))) return;
+      var app = "rivalword://" + m[1] + "/" + m[2];
       document.getElementById("no-encontrada").hidden = true;
-      document.getElementById("reto").hidden = false;
-      document.getElementById("abrir-reto").href = app;
+      document.getElementById(m[1] === "f" ? "amigo" : "reto").hidden = false;
+      document.getElementById(m[1] === "f" ? "abrir-amigo" : "abrir-reto").href = app;
       document.title = "RivalWord";
       location.href = app;
     })();

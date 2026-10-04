@@ -9,6 +9,10 @@
           {
             "/": "/r/*",
             "comment": "Retos en diferido"
+          },
+          {
+            "/": "/f/*",
+            "comment": "Invitaciones de amistad"
           }
         ]
       }
